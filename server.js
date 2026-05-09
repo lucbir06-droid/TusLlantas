@@ -104,6 +104,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
     const sessionConfig = {
       mode: "payment",
       line_items,
+      locale: "es-419",
       success_url: `${siteOrigin}/checkout-exitoso.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteOrigin}/carrito.html?pago=cancelado`,
       allow_promotion_codes: true,
