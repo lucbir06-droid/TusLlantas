@@ -5,12 +5,17 @@
   "description": "Backend minimo para Stripe Checkout en tusllantas",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "sync:sheet": "node scripts/sync-sheet.js",
+    "sync:file": "node scripts/sync-sheet.js --file=\"TUSLLANTAS - JUNIO2024.xlsx - INVENTARIO.csv\""
   },
   "dependencies": {
+    "axios": "^1.16.0",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
-    "stripe": "^16.10.0"
+    "stripe": "^16.10.0",
+    "xlsx": "^0.18.5"
   }
 }

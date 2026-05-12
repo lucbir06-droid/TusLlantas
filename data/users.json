@@ -1,0 +1,11 @@
+[
+  {
+    "id": "528cb8da-b7ed-4532-a6e8-59a3596f221e",
+    "name": "Luca",
+    "email": "lucbir@outlook.com",
+    "phone": "525538828952",
+    "passwordHash": "12ce8a1a13dec84d1ac0e41cf20895ebc570d23089e57fd17712c888eb1e90906a8289a4b33eab118a0ca0c42b49a4b8a4d9d478589496ff0190e56e6f9be945",
+    "passwordSalt": "3f5e09ceed5c7669ae41b21e1df96af6",
+    "createdAt": "2026-05-12T00:26:00.451Z"
+  }
+]

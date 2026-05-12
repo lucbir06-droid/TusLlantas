@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carrito de compras | tusllantas</title>
-  <meta name="description" content="Revisa cantidades, subtotal, envio y cupones antes de finalizar tu compra de llantas." />
+  <meta name="description" content="Revisa cantidades, subtotal y cupones antes de finalizar tu compra de llantas. Envios nacionales, proximamente." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -20,7 +20,7 @@
         <a href="carrito.html" aria-current="page">Carrito</a>
       </nav>
       <div class="header-actions">
-        <a href="#" class="icon-btn">Entrar</a>
+        <a href="iniciar-sesion.html" class="icon-btn">Entrar</a>
         <a href="carrito.html" class="icon-btn cart-btn">Carrito <span id="cartCount" class="cart-count">0</span></a>
       </div>
     </div>
@@ -38,11 +38,20 @@
       <h2>Resumen</h2>
       <p id="cartEmptyNote" class="cart-empty-note" hidden>Agrega llantas al carrito antes de continuar al pago.</p>
 
-      <label for="shippingState">Calculo de envio</label>
-      <select id="shippingState">
-        <option value="350">CDMX y area metropolitana - $350</option>
-        <option value="450">Zona centro - $450</option>
-        <option value="590">Norte y sureste - $590</option>
+      <label for="installments">Forma de pago</label>
+      <select id="installments">
+        <option value="0">Pago unico</option>
+        <option value="3">3 meses sin interes</option>
+        <option value="6">6 meses sin interes</option>
+        <option value="12">12 meses sin interes</option>
+      </select>
+
+      <label for="pickupBranch">Sucursal de recoleccion</label>
+      <select id="pickupBranch">
+        <option value="Carranza">Carranza</option>
+        <option value="Metepec">Metepec</option>
+        <option value="Pino Suarez">Pino Suarez</option>
+        <option value="Adolfo Lopez Mateos">Adolfo Lopez Mateos</option>
       </select>
 
       <label for="couponCode">Cupon de descuento</label>
@@ -51,12 +60,12 @@
         <button id="applyCoupon" class="btn btn-ghost" type="button">Aplicar</button>
       </div>
 
-      <div class="summary-row"><span>Subtotal</span><strong id="subtotalValue">$0</strong></div>
-      <div class="summary-row"><span>Envio</span><strong id="shippingValue">$350</strong></div>
-      <div class="summary-row"><span>Descuento</span><strong id="discountValue">$0</strong></div>
-      <div class="summary-row total"><span>Total</span><strong id="totalValue">$0</strong></div>
+      <div class="summary-row"><span id="subtotalLabel">Subtotal</span><strong id="subtotalValue">$0</strong></div>
+      <div class="summary-row"><span id="discountLabel">Descuento</span><strong id="discountValue">$0</strong></div>
+      <div class="summary-row total"><span id="totalLabel">Total</span><strong id="totalValue">$0</strong></div>
 
       <button id="checkoutButton" class="btn btn-primary full" type="button">Pagar con Stripe</button>
+      <p class="safe-note">Para pagar, necesitas iniciar sesion o crear tu cuenta.</p>
       <p class="safe-note">Pago seguro con cifrado SSL y validacion antifraude.</p>
     </aside>
   </main>
@@ -64,7 +73,7 @@
   <footer class="site-footer compact-footer">
     <div class="container footer-grid">
       <div><h4>tusllantas</h4><p>Toluca y Metepec &mdash; 4 sucursales.</p></div>
-      <div><h4>Soporte</h4><p>Lopez Mateos: <a href="https://wa.me/527229145544">722 914 5544</a><br>Metepec: <a href="https://wa.me/527222474592">722 247 4592</a><br><a href="mailto:somostusllantas@gmail.com">somostusllantas@gmail.com</a></p></div>
+      <div><h4>Soporte</h4><p>Lopez Mateos: <a href="https://wa.me/527229145544">722 914 5544</a><br>Metepec: <a href="https://wa.me/527222474592">722 247 4592</a><br>Maps: <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Adolfo+Lopez+Mateos+Toluca" target="_blank" rel="noopener noreferrer">Lopez Mateos</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Metepec" target="_blank" rel="noopener noreferrer">Metepec</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Pino+Suarez+Toluca" target="_blank" rel="noopener noreferrer">Pino Suarez</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Jesus+Carranza+Toluca" target="_blank" rel="noopener noreferrer">Carranza</a><br><a href="mailto:somostusllantas@gmail.com">somostusllantas@gmail.com</a></p></div>
       <div><h4>Legal</h4><p>Privacidad, garantia y terminos.</p></div>
     </div>
   </footer>
