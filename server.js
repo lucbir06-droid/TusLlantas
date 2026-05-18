@@ -1,19 +1,30 @@
-require("dotenv").config({ path: path.join(__dirname, ".env") });
-
 const express = require("express");
 const cors = require("cors");
 const Stripe = require("stripe");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { spawn } = require("child_process");
 const tireImportRoutes = require("./routes/tireImportRoutes");
+const { syncProductsFromSheet } = require("./scripts/sync-sheet");
+
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const port = Number(process.env.PORT || 4242);
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
 const stripe = stripeSecretKey ? Stripe(stripeSecretKey) : null;
 const USERS_PATH = path.join(__dirname, "data", "users.json");
+const NOTIFIED_SESSIONS_PATH = path.join(__dirname, "data", "notified-sessions.json");
+const SMTP_HOST = String(process.env.SMTP_HOST || "").trim();
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const SMTP_SECURE = String(process.env.SMTP_SECURE || "").trim() === "true";
+const SMTP_USER = String(process.env.SMTP_USER || "").trim();
+const SMTP_PASS = String(process.env.SMTP_PASS || "").trim();
+const FROM_EMAIL = String(process.env.FROM_EMAIL || SMTP_USER || "").trim();
+const COMPANY_NOTIFY_EMAIL = String(process.env.COMPANY_NOTIFY_EMAIL || "").trim();
+let mailTransporter = null;
 
 const DEFAULT_PRICE_MAP_MXN = {
   "Goodyear Wrangler Trailrunner AT 275/60R20": 4799,
@@ -157,6 +168,127 @@ function runSyncScript() {
   });
 }
 
+function emailsEnabled() {
+  return Boolean(SMTP_HOST && SMTP_PORT && SMTP_USER && SMTP_PASS && FROM_EMAIL);
+}
+
+function getMailTransporter() {
+  if (!emailsEnabled()) return null;
+  if (mailTransporter) return mailTransporter;
+
+  mailTransporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_SECURE || SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    }
+  });
+
+  return mailTransporter;
+}
+
+function ensureNotifiedSessionsStorage() {
+  const dir = path.dirname(NOTIFIED_SESSIONS_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(NOTIFIED_SESSIONS_PATH)) fs.writeFileSync(NOTIFIED_SESSIONS_PATH, "{}\n", "utf8");
+}
+
+function readNotifiedSessions() {
+  try {
+    ensureNotifiedSessionsStorage();
+    const raw = fs.readFileSync(NOTIFIED_SESSIONS_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeNotifiedSessions(data) {
+  ensureNotifiedSessionsStorage();
+  fs.writeFileSync(NOTIFIED_SESSIONS_PATH, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+}
+
+function wasSessionNotified(sessionId) {
+  if (!sessionId) return false;
+  const notified = readNotifiedSessions();
+  return Boolean(notified[sessionId]);
+}
+
+function markSessionNotified(sessionId, meta = {}) {
+  if (!sessionId) return;
+  const notified = readNotifiedSessions();
+  notified[sessionId] = {
+    sentAt: new Date().toISOString(),
+    ...meta
+  };
+  writeNotifiedSessions(notified);
+}
+
+function buildOrderLines(lineItems) {
+  const items = Array.isArray(lineItems) ? lineItems : [];
+  if (!items.length) return "Sin productos";
+  return items
+    .map((item) => `- ${String(item?.name || "Producto")} x${Number(item?.qty || 0)} (${formatCurrencyMxn(item?.totalAmount || 0)})`)
+    .join("\n");
+}
+
+async function sendCheckoutEmailsIfNeeded(session, lineItems) {
+  const sessionId = String(session?.id || "").trim();
+  const paymentStatus = String(session?.payment_status || "").trim().toLowerCase();
+  if (!sessionId || paymentStatus !== "paid") return;
+  if (wasSessionNotified(sessionId)) return;
+
+  const transporter = getMailTransporter();
+  if (!transporter) return;
+
+  const customerEmail = String(session?.customer_details?.email || "").trim();
+  const total = formatCurrencyMxn(Number(session?.amount_total || 0) / 100);
+  const currency = String(session?.currency || "mxn").toUpperCase();
+  const orderLines = buildOrderLines(lineItems);
+  const pickupBranch = String(session?.metadata?.pickupBranch || "Sucursal por confirmar");
+  const subjectBase = `Confirmacion de pedido TusLlantas - ${sessionId}`;
+
+  if (COMPANY_NOTIFY_EMAIL) {
+    await transporter.sendMail({
+      from: FROM_EMAIL,
+      to: COMPANY_NOTIFY_EMAIL,
+      subject: `[Empresa] ${subjectBase}`,
+      text:
+        `Se recibio un nuevo pago confirmado.\n\n` +
+        `Session ID: ${sessionId}\n` +
+        `Cliente: ${customerEmail || "Sin correo"}\n` +
+        `Sucursal: ${pickupBranch}\n` +
+        `Total: ${total} ${currency}\n\n` +
+        `Productos:\n${orderLines}`
+    });
+  }
+
+  if (customerEmail) {
+    await transporter.sendMail({
+      from: FROM_EMAIL,
+      to: customerEmail,
+      subject: `[TusLlantas] ${subjectBase}`,
+      text:
+        `Tu pago fue confirmado. Gracias por tu compra.\n\n` +
+        `Session ID: ${sessionId}\n` +
+        `Sucursal de entrega: ${pickupBranch}\n` +
+        `Total: ${total} ${currency}\n\n` +
+        `Resumen:\n${orderLines}\n\n` +
+        `Si tienes dudas, responde a este correo.`
+    });
+  }
+
+  markSessionNotified(sessionId, {
+    customerEmail,
+    amountTotal: Number(session?.amount_total || 0) / 100,
+    currency,
+    paymentStatus
+  });
+}
+
 const autoSyncMs = Number(process.env.AUTO_SYNC_MS || 0);
 const hasSyncSource = Boolean(process.env.SHEET_CSV_URL || process.env.SHEET_LOCAL_CSV);
 
@@ -173,6 +305,21 @@ const couponConfig = {
 };
 
 const ALLOWED_PICKUP_BRANCHES = new Set(["Carranza", "Metepec", "Pino Suarez", "Adolfo Lopez Mateos"]);
+const syncAdminToken = String(process.env.SYNC_ADMIN_TOKEN || "").trim();
+let isManualSyncRunning = false;
+
+function isAuthorizedToSync(req) {
+  if (!syncAdminToken) return true;
+
+  const provided = String(req.headers["x-sync-token"] || req.body?.syncToken || "").trim();
+  if (!provided || provided.length !== syncAdminToken.length) return false;
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(provided, "utf8"), Buffer.from(syncAdminToken, "utf8"));
+  } catch {
+    return false;
+  }
+}
 
 app.use(cors({ origin: true }));
 app.use(express.json());
@@ -189,6 +336,39 @@ app.get("/api/products", (_req, res) => {
     updatedAt: getProductsLastUpdated(),
     products
   });
+});
+
+app.post("/api/products/sync", async (req, res) => {
+  if (!isAuthorizedToSync(req)) {
+    return res.status(401).json({ error: "No autorizado para sincronizar inventario." });
+  }
+
+  if (isManualSyncRunning) {
+    return res.status(409).json({ error: "Ya hay una sincronizacion en progreso." });
+  }
+
+  try {
+    isManualSyncRunning = true;
+    const sourceFile = String(req.body?.file || "").trim();
+
+    const syncResult = await syncProductsFromSheet({
+      localFilePath: sourceFile || process.env.SHEET_LOCAL_CSV || "",
+      sheetCsvUrl: process.env.SHEET_CSV_URL || ""
+    });
+
+    const products = loadProductsFromJson();
+
+    return res.json({
+      ok: true,
+      source: syncResult.source,
+      count: products.length,
+      updatedAt: getProductsLastUpdated()
+    });
+  } catch (error) {
+    return res.status(500).json({ error: String(error?.message || "No se pudo sincronizar el inventario.") });
+  } finally {
+    isManualSyncRunning = false;
+  }
 });
 
 app.post("/api/auth/register", (req, res) => {
@@ -537,6 +717,12 @@ app.get("/api/checkout-session-status", async (req, res) => {
             totalAmount: Number(item?.amount_total || 0) / 100
           }))
       : [];
+
+    try {
+      await sendCheckoutEmailsIfNeeded(session, lineItems);
+    } catch (error) {
+      console.warn("No se pudieron enviar correos de confirmacion:", error?.message || "error desconocido");
+    }
 
     return res.json({
       ok: true,

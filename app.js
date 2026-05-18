@@ -2,12 +2,29 @@ const CART_KEY = "tusllantas-cart";
 const AUTH_USER_KEY = "tusllantas-auth-user";
 const PENDING_CHECKOUT_KEY = "tusllantas-pending-checkout";
 const PURCHASES_KEY_PREFIX = "tusllantas-purchases-";
-const STRIPE_API_BASE = "https://tusllantas-production.up.railway.app";
+const getApiBaseUrl = () => {
+  if (typeof window === "undefined" || !window.location) return "http://localhost:4242";
+
+  const { origin, protocol, hostname } = window.location;
+  if (origin && origin !== "null" && protocol !== "file:") return origin;
+  if (hostname === "localhost" || hostname === "127.0.0.1") return "http://localhost:4242";
+
+  return "http://localhost:4242";
+};
+
+const STRIPE_API_BASE = getApiBaseUrl();
 const PRODUCTS_API_URL = `${STRIPE_API_BASE}/api/products`;
 const PRODUCTS_LOCAL_URL = "data/products.json";
 const PRODUCTS_REFRESH_MS = 30000;
-const LOGIN_PAGE = "iniciar-sesion.html";
-const SIGNUP_PAGE = "crear-cuenta.html";
+const HOME_PAGE = "/";
+const CATALOG_PAGE = "/catalogo";
+const CART_PAGE = "/carrito";
+const PRODUCT_PAGE = "/producto";
+const LOGIN_PAGE = "/iniciar-sesion";
+const SIGNUP_PAGE = "/crear-cuenta";
+const ACCOUNT_PAGE = "/cuenta";
+const PURCHASES_PAGE = "/compras";
+const ACCOUNT_DETAILS_PAGE = "/detalles-cuenta";
 const BRANCH_LABELS = [
   "Carranza",
   "Metepec",
@@ -42,7 +59,17 @@ const normalizeNameKey = (text) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const buildProductUrl = (name) => `producto.html?name=${encodeURIComponent(String(name || "").trim())}`;
+  const normalizeCompactKey = (text) => normalizeNameKey(text).replace(/\s+/g, "");
+
+const normalizeRoutePath = (value) => {
+  const cleaned = String(value || "").trim();
+  if (!cleaned) return HOME_PAGE;
+  if (cleaned === "index" || cleaned === "/index" || cleaned === "index.html" || cleaned === "/index.html") return HOME_PAGE;
+  const withoutQuery = cleaned.split("?")[0].replace(/^\/+/, "").replace(/\.html$/i, "");
+  return withoutQuery ? `/${withoutQuery}` : HOME_PAGE;
+};
+
+const buildProductUrl = (name) => `${PRODUCT_PAGE}?name=${encodeURIComponent(String(name || "").trim())}`;
 
 const formatDetailKey = (key) =>
   String(key || "")
@@ -118,18 +145,32 @@ const getSafeReturnTo = () => {
   if (!rawValue) return "";
   if (rawValue.startsWith("http://") || rawValue.startsWith("https://") || rawValue.startsWith("//")) return "";
 
-  const normalized = rawValue.startsWith("/") ? rawValue.slice(1) : rawValue;
-  if (!normalized.endsWith(".html") && !normalized.includes(".html?")) return "";
-  return normalized;
+  const normalized = normalizeRoutePath(rawValue);
+  const pathname = normalized.split("?")[0];
+  const allowedRoutes = new Set([
+    HOME_PAGE,
+    CATALOG_PAGE,
+    CART_PAGE,
+    PRODUCT_PAGE,
+    LOGIN_PAGE,
+    SIGNUP_PAGE,
+    ACCOUNT_PAGE,
+    PURCHASES_PAGE,
+    ACCOUNT_DETAILS_PAGE,
+    "/checkout-exitoso",
+    "/pedidos"
+  ]);
+
+  return allowedRoutes.has(pathname) ? normalized : "";
 };
 
 const redirectAfterAuthIfNeeded = () => {
   const returnTo = getSafeReturnTo();
-  window.location.href = returnTo || "index.html";
+  window.location.href = returnTo || HOME_PAGE;
 };
 
 const buildAuthPageUrl = (page) => {
-  const currentPage = window.location.pathname.split("/").pop() || "index.html";
+  const currentPage = normalizeRoutePath(window.location.pathname || HOME_PAGE);
   const currentSearch = window.location.search || "";
   const returnTo = `${currentPage}${currentSearch}`;
   return `${page}?returnTo=${encodeURIComponent(returnTo)}`;
@@ -150,7 +191,7 @@ const ensureAuthLink = (actions) => {
   if (existing) return existing;
 
   const fallback = Array.from(actions.querySelectorAll("a.icon-btn")).find(
-    (link) => [LOGIN_PAGE, SIGNUP_PAGE, "cuenta.html"].includes(String(link.getAttribute("href") || "").toLowerCase())
+    (link) => [LOGIN_PAGE, SIGNUP_PAGE, ACCOUNT_PAGE].includes(normalizeRoutePath(String(link.getAttribute("href") || "").toLowerCase()))
   );
   if (fallback) {
     fallback.setAttribute("data-auth-link", "true");
@@ -217,14 +258,20 @@ const renderHeaderAuth = () => {
       </button>
       <div class="profile-dropdown" role="menu" aria-label="Menu de perfil">
         <p class="profile-name">${escapeHtml(authDisplayName(user))}</p>
-        <a href="compras.html" role="menuitem">Mis compras</a>
-        <a href="detalles-cuenta.html" role="menuitem">Detalles de cuenta</a>
+        <a href="${PURCHASES_PAGE}" role="menuitem">Mis compras</a>
+        <a href="${ACCOUNT_DETAILS_PAGE}" role="menuitem">Detalles de cuenta</a>
         <button type="button" class="profile-logout" data-auth-logout="true" role="menuitem">Cerrar sesion</button>
       </div>
     `;
 
     actions.appendChild(menu);
   });
+
+  enhanceCartButtons();
+
+  if (typeof window !== "undefined" && typeof window.syncMobileNavMenus === "function") {
+    window.syncMobileNavMenus();
+  }
 };
 
 const initAuthUi = () => {
@@ -276,7 +323,12 @@ const formatPrice = (value) =>
     maximumFractionDigits: 0
   }).format(value);
 
-const DEFAULT_PRODUCT_IMAGE = "https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80";
+const DEFAULT_PRODUCT_IMAGE = "data/image-backup/0565-lt275-60r20-goodyear-wrangler-trail-runner-at-115s.jpg";
+const HOME_FEATURED_FALLBACK_IMAGES = [
+  "data/image-backup/0565-lt275-60r20-goodyear-wrangler-trail-runner-at-115s.jpg",
+  "data/image-backup/0297-p265-70r16-cooper-evolution-att-112t.webp",
+  "data/image-backup/0571-p285-45r22-pirelli-scorpion-all-season-plus-3-114h-xl.jpg"
+];
 
 const normalizeImageUrl = (url) => {
   const value = String(url || "").trim();
@@ -290,9 +342,30 @@ const normalizeImageUrl = (url) => {
   return value;
 };
 
+const bindImageFallback = (imageNode, fallbackUrl) => {
+  if (!imageNode || imageNode.dataset.fallbackBound === "true") return;
+
+  imageNode.dataset.fallbackBound = "true";
+  imageNode.addEventListener("error", () => {
+    if (imageNode.dataset.fallbackApplied === "true") return;
+    imageNode.dataset.fallbackApplied = "true";
+    imageNode.src = fallbackUrl || DEFAULT_PRODUCT_IMAGE;
+  });
+};
+
+const ensureFeaturedImageFallbacks = (container) => {
+  if (!container) return;
+
+  Array.from(container.querySelectorAll("img")).forEach((imageNode, index) => {
+    const fallbackUrl = HOME_FEATURED_FALLBACK_IMAGES[index % HOME_FEATURED_FALLBACK_IMAGES.length] || DEFAULT_PRODUCT_IMAGE;
+    bindImageFallback(imageNode, fallbackUrl);
+  });
+};
+
 const KNOWN_BRANDS = [
   "bfgoodrich",
   "royal black",
+  "royalblack",
   "ling long",
   "i-link",
   "momo tires",
@@ -329,6 +402,7 @@ const KNOWN_BRANDS = [
   "duraturn",
   "euzkadi",
   "altenzo",
+  "tornel",
   "momo"
 ];
 
@@ -349,12 +423,26 @@ const inferBrandFromProduct = (product) => {
 
 const inferSizeFromProduct = (product) => {
   const explicitSize = String(product?.size || "").trim();
-  if (explicitSize) return normalizeSlug(explicitSize, "sin-medida");
+  if (explicitSize) {
+    const canonicalExplicitSize = String(explicitSize)
+      .toUpperCase()
+      .replace(/^P(?=\d)/, "")
+      .replace(/^LT(?=\d)/, "")
+      .replace(/\s+/g, "");
+    return canonicalExplicitSize || "sin-medida";
+  }
 
   const sourceText = String(product?.name || product?.details?.descripcion || "").toUpperCase();
-  const sizeMatch = sourceText.match(/((?:P|LT)?\d{3}\/\d{2,3}R\d{2}|\d{2,3}\/\d{2,3}R\d{2}|\d{2}X\d{1,2}(?:\.\d{1,2})?R\d{2}|\d{2,3}R\d{2})/);
+  const sizeMatch = sourceText.match(/((?:P|LT)?\d{3}\/\d{2,3}R\d{2}|\d{2,3}\/\d{2,3}R\d{2}|\d{2,3}X\d{1,2}(?:\.\d{1,2})?R\d{2}|\d{2,3}R\d{2})/);
 
-  return normalizeSlug(sizeMatch?.[1] || "sin-medida", "sin-medida");
+  if (!sizeMatch?.[1]) return "sin-medida";
+
+  const canonicalSize = sizeMatch[1]
+    .replace(/^P(?=\d)/, "")
+    .replace(/^LT(?=\d)/, "")
+    .replace(/\s+/g, "");
+
+  return canonicalSize || "sin-medida";
 };
 
 const inferRinFromProduct = (product) => {
@@ -371,17 +459,39 @@ const parseCatalogSearchCriteria = () => {
   const params = new URLSearchParams(window.location.search);
   return {
     brand: normalizeNameKey(String(params.get("q") || "")),
-    width: String(params.get("ancho") || "").trim(),
+    width: String(params.get("ancho") || "").trim().toUpperCase(),
     profile: String(params.get("perfil") || "").trim(),
     rin: String(params.get("rin") || "").trim()
   };
 };
 
 const extractSizeParts = (product) => {
-  const rawSize = String(product?.size || "").trim() || String(product?.details?.medida || "").trim();
+  const rawSize =
+    String(product?.size || "").trim() ||
+    String(product?.details?.medida || "").trim() ||
+    String(product?.name || "").trim() ||
+    String(product?.details?.descripcion || "").trim();
   const normalized = rawSize.toUpperCase();
-  const match = normalized.match(/(\d{3})\/(\d{2,3})R(\d{2})/);
+  const match = normalized.match(/(?:P|LT)?(\d{3})\/(\d{2,3})R(\d{2})/);
   if (!match) {
+    const flotationMatch = normalized.match(/(\d{2,3})X(\d{1,2}(?:\.\d{1,2})?)R(\d{2})/);
+    if (flotationMatch) {
+      return {
+        width: `${flotationMatch[1]}X`,
+        profile: flotationMatch[2],
+        rin: flotationMatch[3]
+      };
+    }
+
+    const compactMatch = normalized.match(/(?:P|LT)?(\d{3})R(\d{2})/);
+    if (compactMatch) {
+      return {
+        width: compactMatch[1],
+        profile: "",
+        rin: compactMatch[2]
+      };
+    }
+
     return {
       width: "",
       profile: "",
@@ -399,9 +509,17 @@ const extractSizeParts = (product) => {
 const matchesCatalogSearchCriteria = (product, criteria) => {
   const productBrandKey = normalizeNameKey(product?.brand || inferBrandFromProduct(product));
   const productNameKey = normalizeNameKey(product?.name || "");
+  const productBrandCompactKey = normalizeCompactKey(productBrandKey);
+  const productNameCompactKey = normalizeCompactKey(productNameKey);
+  const criteriaBrandCompactKey = normalizeCompactKey(criteria.brand || "");
   const sizeParts = extractSizeParts(product);
 
-  const brandOk = !criteria.brand || productBrandKey.includes(criteria.brand) || productNameKey.includes(criteria.brand);
+  const brandOk =
+    !criteria.brand ||
+    productBrandKey.includes(criteria.brand) ||
+    productNameKey.includes(criteria.brand) ||
+    (criteriaBrandCompactKey &&
+      (productBrandCompactKey.includes(criteriaBrandCompactKey) || productNameCompactKey.includes(criteriaBrandCompactKey)));
   const widthOk = !criteria.width || sizeParts.width === criteria.width;
   const profileOk = !criteria.profile || sizeParts.profile === criteria.profile;
   const rinOk = !criteria.rin || sizeParts.rin === criteria.rin || String(product?.rin || "").trim() === criteria.rin;
@@ -432,24 +550,15 @@ const getStockState = (totalStock) => {
 };
 
 const getStockText = (product) => {
-  const availableBranches = Array.isArray(product?.availableBranches)
-    ? product.availableBranches.filter((value) => String(value || "").trim() !== "")
-    : [];
-  const totalStock = Number(product?.totalStock || availableBranches.length || 0);
+  const totalStock = Number(product?.existencia_general || product?.totalStock || 0);
 
   if (totalStock <= 0) return "Agotado";
-  if (totalStock <= 3) {
-    return `Ultimas ${totalStock} piezas${availableBranches.length ? ` en: ${availableBranches.join(" | ")}` : ""}`;
-  }
-
-  return availableBranches.length
-    ? `Disponible en: ${availableBranches.join(" | ")}`
-    : "Disponible";
+  return totalStock <= 3 ? `Ultimas ${totalStock} piezas` : `Disponible`;
 };
 
 const fetchProducts = async () => {
   try {
-    const response = await fetch(PRODUCTS_API_URL);
+    const response = await fetch(PRODUCTS_API_URL, { cache: "no-store" });
     if (response.ok) {
       const data = await response.json();
       const products = Array.isArray(data?.products) ? data.products : [];
@@ -460,7 +569,7 @@ const fetchProducts = async () => {
   }
 
   try {
-    const localResponse = await fetch(PRODUCTS_LOCAL_URL);
+    const localResponse = await fetch(PRODUCTS_LOCAL_URL, { cache: "no-store" });
     if (!localResponse.ok) return [];
     const localData = await localResponse.json();
     return Array.isArray(localData) ? localData : [];
@@ -503,12 +612,9 @@ const initProductDetailPage = async () => {
   const productImage = normalizeImageUrl(product.image);
   const productType = inferTypeFromProduct(product).replace(/-/g, " ");
   const productSize = String(product.size || "").trim() || String(product.details?.medida || "").trim() || "Medida no especificada";
-  const totalStock = Number(product.totalStock || 0);
+  const totalStock = Number(product.existencia_general || product.totalStock || 0);
   const stockState = getStockState(totalStock);
   const stockLabel = getStockText(product);
-  const branchText = Array.isArray(product.availableBranches) && product.availableBranches.length
-    ? product.availableBranches.join(" | ")
-    : "Sucursal por confirmar";
 
   document.title = `${productName} | tusllantas`;
 
@@ -535,7 +641,7 @@ const initProductDetailPage = async () => {
   if (points) {
     const pointsHtml = [
       `<li>Disponibilidad total: ${totalStock} pieza(s).</li>`,
-      `<li>Sucursales: ${escapeHtml(branchText)}.</li>`,
+      `<li>Existencia general: ${totalStock > 0 ? `${totalStock} pieza(s)` : "Agotado"}.</li>`,
       `<li>Tipo: ${escapeHtml(productType)}.</li>`
     ];
     points.innerHTML = pointsHtml.join("");
@@ -579,7 +685,7 @@ const initProductDetailPage = async () => {
       ["Medida", productSize],
       ["Tipo", productType],
       ["Stock total", String(totalStock)],
-      ["Sucursales", branchText]
+      ["Existencia general", totalStock > 0 ? String(totalStock) : "Agotado"]
     ];
 
     const rows = entries.length
@@ -635,6 +741,34 @@ const updateCartCount = () => {
   });
 };
 
+const enhanceCartButtons = () => {
+  document.querySelectorAll(".cart-btn").forEach((button) => {
+    if (!button.querySelector(".cart-icon")) {
+      const icon = document.createElement("span");
+      icon.className = "cart-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = "🛒";
+      button.prepend(icon);
+    }
+
+    if (!button.querySelector(".cart-label")) {
+      const label = document.createElement("span");
+      label.className = "cart-label";
+      label.textContent = "Carrito";
+      const countNode = button.querySelector(".cart-count");
+      if (countNode) {
+        button.insertBefore(label, countNode);
+      } else {
+        button.appendChild(label);
+      }
+    }
+
+    Array.from(button.childNodes)
+      .filter((node) => node.nodeType === Node.TEXT_NODE && String(node.textContent || "").trim())
+      .forEach((node) => node.remove());
+  });
+};
+
 const addToCart = (name, price) => {
   const cart = readCart();
   const exists = cart.find((item) => item.name === name);
@@ -663,16 +797,132 @@ const bindAddButtons = () => {
 };
 
 const initMenuToggle = () => {
-  const toggle = document.getElementById("menuToggle");
-  const nav = document.getElementById("mainNav");
+  const navWraps = Array.from(document.querySelectorAll(".site-header .nav-wrap"));
+  if (!navWraps.length) return;
 
-  if (!toggle || !nav) return;
+  const closeAllMenus = () => {
+    navWraps.forEach((wrap) => {
+      const toggle = wrap.querySelector(".menu-toggle");
+      const nav = wrap.querySelector(".main-nav");
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+      if (nav) nav.classList.remove("show");
+    });
+  };
 
-  toggle.addEventListener("click", () => {
-    const expanded = toggle.getAttribute("aria-expanded") === "true";
-    toggle.setAttribute("aria-expanded", String(!expanded));
-    nav.classList.toggle("show");
-  });
+  const syncMobileNavMenus = () => {
+    const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches;
+    const authUser = readAuthUser();
+
+    navWraps.forEach((wrap, index) => {
+      const nav = wrap.querySelector(".main-nav");
+      const logo = wrap.querySelector(".logo");
+      if (!nav || !logo) return;
+
+      if (!nav.id) {
+        nav.id = index === 0 ? "mainNav" : `mainNav-${index + 1}`;
+      }
+
+      let toggle = wrap.querySelector(".menu-toggle");
+      if (!toggle) {
+        toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "menu-toggle";
+        toggle.setAttribute("aria-label", "Abrir menu");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.setAttribute("aria-controls", nav.id);
+        toggle.textContent = "☰";
+        logo.insertAdjacentElement("afterend", toggle);
+      } else {
+        toggle.setAttribute("aria-controls", nav.id);
+        toggle.textContent = "☰";
+      }
+
+      nav.querySelectorAll(".mobile-menu-auth, .mobile-menu-logout").forEach((node) => node.remove());
+
+      if (!isMobile) {
+        return;
+      }
+
+      if (authUser) {
+        const purchasesLink = document.createElement("a");
+        purchasesLink.href = PURCHASES_PAGE;
+        purchasesLink.className = "mobile-menu-auth";
+        purchasesLink.textContent = "Mis compras";
+        nav.appendChild(purchasesLink);
+
+        const accountLink = document.createElement("a");
+        accountLink.href = ACCOUNT_DETAILS_PAGE;
+        accountLink.className = "mobile-menu-auth";
+        accountLink.textContent = "Mi cuenta";
+        nav.appendChild(accountLink);
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.type = "button";
+        logoutBtn.className = "mobile-menu-logout";
+        logoutBtn.textContent = "Cerrar sesion";
+        logoutBtn.addEventListener("click", () => {
+          clearAuthUser();
+          closeProfileMenus();
+          renderHeaderAuth();
+          closeAllMenus();
+        });
+        nav.appendChild(logoutBtn);
+      } else {
+        const loginLink = document.createElement("a");
+        loginLink.href = buildAuthPageUrl(LOGIN_PAGE);
+        loginLink.className = "mobile-menu-auth";
+        loginLink.textContent = "Iniciar sesion";
+        nav.appendChild(loginLink);
+
+        const signupLink = document.createElement("a");
+        signupLink.href = buildAuthPageUrl(SIGNUP_PAGE);
+        signupLink.className = "mobile-menu-auth";
+        signupLink.textContent = "Crear cuenta";
+        nav.appendChild(signupLink);
+      }
+
+      if (toggle.dataset.menuBound !== "true") {
+        toggle.dataset.menuBound = "true";
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          closeAllMenus();
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          nav.classList.toggle("show", !expanded);
+        });
+      }
+
+      if (nav.dataset.menuLinksBound !== "true") {
+        nav.dataset.menuLinksBound = "true";
+        nav.addEventListener("click", (event) => {
+          const target = event.target;
+          if (target.closest("a")) {
+            closeAllMenus();
+          }
+        });
+      }
+    });
+  };
+
+  syncMobileNavMenus();
+  window.syncMobileNavMenus = syncMobileNavMenus;
+
+  if (typeof window !== "undefined" && document.body.dataset.mobileMenuResizeBound !== "true") {
+    document.body.dataset.mobileMenuResizeBound = "true";
+    window.addEventListener("resize", () => {
+      closeAllMenus();
+      syncMobileNavMenus();
+    });
+  }
+
+  if (document.body.dataset.mobileMenuDocBound !== "true") {
+    document.body.dataset.mobileMenuDocBound = "true";
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest(".site-header .nav-wrap")) {
+        closeAllMenus();
+      }
+    });
+  }
 };
 
 const initGallery = () => {
@@ -695,21 +945,100 @@ const initGallery = () => {
 const selectedValues = (selector) =>
   Array.from(document.querySelectorAll(selector))
     .filter((node) => node.checked)
-    .map((node) => node.value.toLowerCase());
+    .map((node) => String(node.value || "").trim());
+
+const normalizeCatalogBrand = (value) => normalizeSlug(value, "");
+const normalizeCatalogSize = (value) =>
+  String(value || "")
+    .trim()
+    .toUpperCase()
+    .replace(/^P(?=\d)/, "")
+    .replace(/^LT(?=\d)/, "")
+    .replace(/\s+/g, "");
+const normalizeCatalogRin = (value) => String(value || "").replace(/[^0-9]/g, "");
+const normalizeCatalogType = (value) => normalizeSlug(value, "");
+const normalizeCatalogWidth = (value) => String(value || "").trim().toUpperCase();
+const normalizeCatalogProfile = (value) => String(value || "").trim();
 
 const initCatalogFilters = () => {
   const catalogGrid = document.getElementById("catalogGrid");
   const resultsCount = document.getElementById("resultsCount");
   const priceRange = document.getElementById("priceRange");
   const priceValue = document.getElementById("priceValue");
+  const clearFiltersButtons = Array.from(document.querySelectorAll("[data-clear-filters='true']"));
+  const mobileFiltersToggle = document.getElementById("mobileFiltersToggle");
+  const filtersCard = document.querySelector(".filters-card");
+
+  const initMobileCatalogFiltersDrawer = () => {
+    if (!filtersCard || !mobileFiltersToggle || filtersCard.dataset.drawerBound === "true") return;
+
+    filtersCard.dataset.drawerBound = "true";
+    if (!filtersCard.id) filtersCard.id = "catalogFiltersPanel";
+
+    mobileFiltersToggle.setAttribute("aria-controls", filtersCard.id);
+    mobileFiltersToggle.setAttribute("aria-expanded", "false");
+
+    const closeBtn = document.getElementById("mobileFiltersClose");
+    let overlay = document.querySelector(".filters-overlay");
+
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.className = "filters-overlay";
+      document.body.appendChild(overlay);
+    }
+
+    const closeDrawer = () => {
+      document.body.classList.remove("filters-drawer-open");
+      mobileFiltersToggle.setAttribute("aria-expanded", "false");
+    };
+
+    const openDrawer = () => {
+      if (!window.matchMedia("(max-width: 760px)").matches) return;
+      document.body.classList.add("filters-drawer-open");
+      mobileFiltersToggle.setAttribute("aria-expanded", "true");
+    };
+
+    mobileFiltersToggle.addEventListener("click", () => {
+      const expanded = mobileFiltersToggle.getAttribute("aria-expanded") === "true";
+      if (expanded) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeDrawer);
+    }
+
+    overlay.addEventListener("click", closeDrawer);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeDrawer();
+    });
+
+    window.addEventListener("resize", () => {
+      if (!window.matchMedia("(max-width: 760px)").matches) {
+        closeDrawer();
+      }
+    });
+
+    window.closeCatalogFiltersDrawer = closeDrawer;
+  };
 
   if (!catalogGrid || !priceRange || !priceValue || !resultsCount) return;
 
+  initMobileCatalogFiltersDrawer();
+
+  let smartSearchTextQuery = "";
+
   const applyFilters = () => {
-    const brands = selectedValues(".filter-brand");
-    const sizes = selectedValues(".filter-size");
-    const rins = selectedValues(".filter-rin");
-    const types = selectedValues(".filter-type");
+    const brands = selectedValues(".filter-brand").map((value) => normalizeCatalogBrand(value));
+    const sizes = selectedValues(".filter-size").map((value) => normalizeCatalogSize(value));
+    const widths = selectedValues(".filter-width").map((value) => normalizeCatalogWidth(value));
+    const profiles = selectedValues(".filter-profile").map((value) => normalizeCatalogProfile(value));
+    const rins = selectedValues(".filter-rin").map((value) => normalizeCatalogRin(value));
+    const types = selectedValues(".filter-type").map((value) => normalizeCatalogType(value));
     const maxPrice = Number(priceRange.value);
     const stock = (document.querySelector(".filter-stock:checked") || {}).value || "all";
 
@@ -717,21 +1046,38 @@ const initCatalogFilters = () => {
 
     let shown = 0;
     document.querySelectorAll(".catalog-item").forEach((item) => {
-      const itemBrand = item.dataset.brand.toLowerCase();
-      const itemSize = item.dataset.size.toLowerCase();
-      const itemRin = item.dataset.rin.toLowerCase();
-      const itemType = item.dataset.type.toLowerCase();
+      const itemBrand = normalizeCatalogBrand(item.dataset.brand);
+      const itemSize = normalizeCatalogSize(item.dataset.size);
+      const itemRin = normalizeCatalogRin(item.dataset.rin);
+      const itemType = normalizeCatalogType(item.dataset.type);
       const itemPrice = Number(item.dataset.price);
       const itemStock = item.dataset.stock.toLowerCase();
+      const itemName = normalizeNameKey(item.dataset.name || item.querySelector("h3 a")?.textContent || "");
+      const itemBrandText = normalizeNameKey(item.dataset.brand || "");
+      const itemNameCompact = normalizeCompactKey(itemName);
+      const itemBrandTextCompact = normalizeCompactKey(itemBrandText);
+      const smartSearchCompact = normalizeCompactKey(smartSearchTextQuery);
 
+      const sizeParts = extractSizeParts({ size: itemSize, rin: itemRin });
+      const itemWidth = normalizeCatalogWidth(sizeParts.width);
+      const itemProfile = normalizeCatalogProfile(sizeParts.profile);
+
+      const smartQueryOk =
+        !smartSearchTextQuery ||
+        itemName.includes(smartSearchTextQuery) ||
+        itemBrandText.includes(smartSearchTextQuery) ||
+        (smartSearchCompact &&
+          (itemNameCompact.includes(smartSearchCompact) || itemBrandTextCompact.includes(smartSearchCompact)));
       const brandOk = brands.length === 0 || brands.includes(itemBrand);
       const sizeOk = sizes.length === 0 || sizes.includes(itemSize);
+      const widthOk = widths.length === 0 || widths.includes(itemWidth);
+      const profileOk = profiles.length === 0 || profiles.includes(itemProfile);
       const rinOk = rins.length === 0 || rins.includes(itemRin);
       const typeOk = types.length === 0 || types.includes(itemType);
       const priceOk = itemPrice <= maxPrice;
       const stockOk = stock === "all" || itemStock === stock;
 
-      const visible = brandOk && sizeOk && rinOk && typeOk && priceOk && stockOk;
+      const visible = smartQueryOk && brandOk && sizeOk && widthOk && profileOk && rinOk && typeOk && priceOk && stockOk;
       item.style.display = visible ? "grid" : "none";
       if (visible) shown += 1;
     });
@@ -739,8 +1085,51 @@ const initCatalogFilters = () => {
     resultsCount.textContent = `Mostrando ${shown} resultados`;
   };
 
+  const generateDynamicFilters = (products) => {
+    const widths = new Set();
+    const profiles = new Set();
+
+    products.forEach((product) => {
+      const sizeParts = extractSizeParts(product);
+      if (sizeParts.width) widths.add(sizeParts.width);
+      if (sizeParts.profile) profiles.add(sizeParts.profile);
+    });
+
+    const widthContainer = document.getElementById("filterWidthContainer");
+    const profileContainer = document.getElementById("filterProfileContainer");
+
+    if (widthContainer) {
+      widthContainer.innerHTML = Array.from(widths)
+        .sort((a, b) => {
+          const aNum = Number(String(a).replace(/X$/i, ""));
+          const bNum = Number(String(b).replace(/X$/i, ""));
+          if (!Number.isFinite(aNum) || !Number.isFinite(bNum)) return String(a).localeCompare(String(b));
+          if (aNum !== bNum) return aNum - bNum;
+
+          const aIsFloatation = /X$/i.test(String(a));
+          const bIsFloatation = /X$/i.test(String(b));
+          if (aIsFloatation === bIsFloatation) return String(a).localeCompare(String(b));
+          return aIsFloatation ? 1 : -1;
+        })
+        .map((width) => `<label><input type="checkbox" class="filter-width" value="${width}" /> ${width}</label>`)
+        .join("");
+    }
+
+    if (profileContainer) {
+      profileContainer.innerHTML = Array.from(profiles)
+        .sort((a, b) => Number(a) - Number(b))
+        .map((profile) => `<label><input type="checkbox" class="filter-profile" value="${profile}" /> ${profile}</label>`)
+        .join("");
+    }
+
+    document.querySelectorAll(".filter-width, .filter-profile").forEach((node) => {
+      node.addEventListener("input", applyFilters);
+      node.addEventListener("change", applyFilters);
+    });
+  };
+
   const triggerNodes = document.querySelectorAll(
-    ".filter-brand, .filter-size, .filter-rin, .filter-type, .filter-stock, #priceRange"
+    ".filter-brand, .filter-size, .filter-width, .filter-profile, .filter-rin, .filter-type, .filter-stock, #priceRange"
   );
 
   triggerNodes.forEach((node) => {
@@ -748,30 +1137,108 @@ const initCatalogFilters = () => {
     node.addEventListener("change", applyFilters);
   });
 
+  const clearAllFilters = () => {
+    document.querySelectorAll(".filter-brand, .filter-size, .filter-width, .filter-profile, .filter-rin, .filter-type").forEach((node) => {
+      node.checked = false;
+    });
+
+    const allStockRadio = document.querySelector('.filter-stock[value="all"]');
+    if (allStockRadio) allStockRadio.checked = true;
+
+    smartSearchTextQuery = "";
+    priceRange.value = priceRange.max;
+
+    if (normalizeRoutePath(window.location.pathname).startsWith(CATALOG_PAGE) && window.location.search) {
+      window.history.replaceState({}, "", CATALOG_PAGE);
+    }
+
+    applyFilters();
+
+    if (typeof window.closeCatalogFiltersDrawer === "function") {
+      window.closeCatalogFiltersDrawer();
+    }
+  };
+
+  clearFiltersButtons.forEach((button) => {
+    button.addEventListener("click", clearAllFilters);
+  });
+
+  const buildProductsFromCatalogDom = () =>
+    Array.from(document.querySelectorAll("#catalogGrid .catalog-item")).map((card) => {
+      const button = card.querySelector(".add-to-cart");
+      const title = card.querySelector("h3 a");
+      const name = String(button?.dataset?.name || title?.textContent || "").trim();
+
+      return {
+        name,
+        price: Number(card.dataset.price || 0),
+        brand: String(card.dataset.brand || "").trim(),
+        size: String(card.dataset.size || "").trim(),
+        rin: String(card.dataset.rin || "").trim(),
+        type: String(card.dataset.type || "").trim()
+      };
+    });
+
   const loadCatalogFromApi = async () => {
     try {
       const products = await fetchProducts();
-      if (!products.length) return;
+      const catalogProducts = products.length ? products : buildProductsFromCatalogDom();
+      if (!catalogProducts.length) {
+        applyFilters();
+        return;
+      }
+
+      generateDynamicFilters(catalogProducts);
 
       const searchCriteria = parseCatalogSearchCriteria();
-      const productsBySmartSearch = products.filter((item) => matchesCatalogSearchCriteria(item, searchCriteria));
-      const hasSmartSearch = Boolean(searchCriteria.brand || searchCriteria.width || searchCriteria.profile || searchCriteria.rin);
-      const renderProducts = hasSmartSearch ? productsBySmartSearch : products;
+      smartSearchTextQuery = normalizeNameKey(searchCriteria.brand || "");
 
       if (searchCriteria.rin) {
         document.querySelectorAll(".filter-rin").forEach((node) => {
-          node.checked = String(node.value || "").trim() === searchCriteria.rin;
+          node.checked = normalizeCatalogRin(node.value) === normalizeCatalogRin(searchCriteria.rin);
+        });
+      }
+
+      if (searchCriteria.width) {
+        document.querySelectorAll(".filter-width").forEach((node) => {
+          node.checked = normalizeCatalogWidth(node.value) === normalizeCatalogWidth(searchCriteria.width);
+        });
+      }
+
+      if (searchCriteria.profile) {
+        document.querySelectorAll(".filter-profile").forEach((node) => {
+          node.checked = normalizeCatalogProfile(node.value) === normalizeCatalogProfile(searchCriteria.profile);
         });
       }
 
       if (searchCriteria.brand) {
+        let anyBrandChecked = false;
+        const criteriaBrand = normalizeNameKey(searchCriteria.brand);
+        const criteriaBrandCompact = normalizeCompactKey(searchCriteria.brand);
         document.querySelectorAll(".filter-brand").forEach((node) => {
           const value = normalizeNameKey(String(node.value || ""));
-          node.checked = value && (value.includes(searchCriteria.brand) || searchCriteria.brand.includes(value));
+          const valueCompact = normalizeCompactKey(node.value || "");
+          const checked = Boolean(
+            value &&
+              (value.includes(criteriaBrand) ||
+                criteriaBrand.includes(value) ||
+                valueCompact.includes(criteriaBrandCompact) ||
+                criteriaBrandCompact.includes(valueCompact))
+          );
+          node.checked = checked;
+          if (checked) anyBrandChecked = true;
         });
+
+        // If query is a model/keyword (not a known brand checkbox), keep text filtering active.
+        if (anyBrandChecked) smartSearchTextQuery = "";
       }
 
-      const maxApiPrice = renderProducts.reduce((max, item) => {
+      if (!products.length) {
+        applyFilters();
+        return;
+      }
+
+      const maxApiPrice = catalogProducts.reduce((max, item) => {
         const price = Number(item?.price || 0);
         return price > max ? price : max;
       }, Number(priceRange.value || 12000));
@@ -779,7 +1246,7 @@ const initCatalogFilters = () => {
       priceRange.max = String(Math.max(1200, Math.ceil(maxApiPrice / 100) * 100));
       priceRange.value = priceRange.max;
 
-      catalogGrid.innerHTML = renderProducts
+      catalogGrid.innerHTML = catalogProducts
         .map((product) => {
           const name = String(product?.name || "").trim();
           const price = Number(product?.price || 0);
@@ -790,19 +1257,16 @@ const initCatalogFilters = () => {
           const rin = inferRinFromProduct(product);
           const type = inferTypeFromProduct(product);
           const image = normalizeImageUrl(product?.image);
-          const availableBranches = Array.isArray(product?.availableBranches)
-            ? product.availableBranches.filter((value) => String(value || "").trim() !== "")
-            : [];
-          const totalStock = Number(product?.totalStock || availableBranches.length || 0);
+          const totalStock = Number(product?.existencia_general || product?.totalStock || 0);
           const stockState = totalStock <= 0 ? "low" : totalStock <= 3 ? "warn" : "in";
           const stockLabel = totalStock <= 0
             ? "Agotado"
             : totalStock <= 3
-              ? `Ultimas 3 piezas en: ${availableBranches.join(" | ") || "sucursal no especificada"}`
-              : `Disponible en: ${availableBranches.join(" | ") || "sucursal no especificada"}`;
+              ? `Ultimas ${totalStock} piezas`
+              : "Disponible";
 
           return `
-            <article class="product-card catalog-item" data-brand="${escapeHtml(brand)}" data-size="${escapeHtml(size)}" data-rin="${escapeHtml(rin)}" data-type="${escapeHtml(type)}" data-price="${price}" data-stock="${escapeHtml(stockState === "warn" ? "limitado" : stockState === "low" ? "agotado" : "disponible")}">
+            <article class="product-card catalog-item" data-name="${escapeHtml(name)}" data-brand="${escapeHtml(brand)}" data-size="${escapeHtml(size)}" data-rin="${escapeHtml(rin)}" data-type="${escapeHtml(type)}" data-price="${price}" data-stock="${escapeHtml(stockState === "warn" ? "limitado" : stockState === "low" ? "agotado" : "disponible")}">
               <img loading="lazy" src="${escapeHtml(image)}" alt="${escapeHtml(name)}" />
               <div class="product-content">
                 <h3><a href="${escapeHtml(buildProductUrl(name))}">${escapeHtml(name)}</a></h3>
@@ -833,13 +1297,15 @@ const initFeaturedProducts = async () => {
   const grid = document.getElementById("homeFeaturedGrid");
   if (!grid) return;
 
+  ensureFeaturedImageFallbacks(grid);
+
   try {
     const products = await fetchProducts();
     if (!products.length) return;
 
-    const validImageProducts = products
-      .filter((item) => Number(item?.price || 0) > 0)
-      .filter((item) => String(item?.image || "").includes("res.cloudinary.com"));
+    const validPriceProducts = products.filter((item) => Number(item?.price || 0) > 0);
+    const validImageProducts = validPriceProducts.filter((item) => String(item?.image || "").trim() !== "");
+    const sourceProducts = validImageProducts.length ? validImageProducts : validPriceProducts;
 
     const featured = [];
     const usedNames = new Set();
@@ -854,7 +1320,7 @@ const initFeaturedProducts = async () => {
 
     // Keep the first slot as the strongest in-stock option.
     addProduct(
-      [...validImageProducts].sort(
+      [...sourceProducts].sort(
         (left, right) => Number(right?.totalStock || 0) - Number(left?.totalStock || 0)
       )[0]
     );
@@ -873,14 +1339,14 @@ const initFeaturedProducts = async () => {
 
     const pickByNames = (candidates) =>
       candidates
-        .map((name) => validImageProducts.find((item) => normalizeNameKey(item?.name) === normalizeNameKey(name)))
+        .map((name) => sourceProducts.find((item) => normalizeNameKey(item?.name) === normalizeNameKey(name)))
         .find(Boolean);
 
     addProduct(pickByNames(slot2Candidates));
     addProduct(pickByNames(slot3Candidates));
 
     if (featured.length < 3) {
-      validImageProducts
+      sourceProducts
         .sort((left, right) => Number(right?.totalStock || 0) - Number(left?.totalStock || 0))
         .forEach((item) => {
           if (featured.length < 3) addProduct(item);
@@ -915,9 +1381,11 @@ const initFeaturedProducts = async () => {
       })
       .join("");
 
+    ensureFeaturedImageFallbacks(grid);
     bindAddButtons();
   } catch {
     // Mantener tarjetas estaticas si falla la carga de inventario.
+    ensureFeaturedImageFallbacks(grid);
   }
 };
 
@@ -991,7 +1459,7 @@ const renderCart = () => {
           <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/></svg>
           <h3>Tu carrito esta vacio</h3>
           <p>Aun no has agregado ninguna llanta. Explora el catalogo y encuentra la medida que necesitas.</p>
-          <a href="catalogo.html" class="btn btn-primary">Ver catalogo</a>
+          <a href="${CATALOG_PAGE}" class="btn btn-primary">Ver catalogo</a>
         </div>
       `;
       calculate();
@@ -1076,7 +1544,7 @@ const renderCart = () => {
     checkoutButton.addEventListener("click", async () => {
       const activeUser = readAuthUser();
       if (!activeUser?.id) {
-        window.location.href = `${LOGIN_PAGE}?returnTo=${encodeURIComponent("carrito.html")}`;
+        window.location.href = `${LOGIN_PAGE}?returnTo=${encodeURIComponent(CART_PAGE)}`;
         return;
       }
 
@@ -1590,6 +2058,7 @@ const initAccountDetailsPage = () => {
 document.addEventListener("DOMContentLoaded", () => {
   renderHeaderAuth();
   initAuthUi();
+  enhanceCartButtons();
   updateCartCount();
   bindAddButtons();
   initMenuToggle();
@@ -1605,3 +2074,4 @@ document.addEventListener("DOMContentLoaded", () => {
   initRegisterForm();
   initAccountDetailsPage();
 });
+

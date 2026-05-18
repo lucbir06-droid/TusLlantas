@@ -11,28 +11,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="catalog-page">
   <header class="site-header compact">
     <div class="container nav-wrap">
-      <a class="logo" href="index.html"><img src="logotusllantas.jpg" alt="tusllantas" class="logo-img"></a>
+      <a class="logo" href="/"><img src="logotusllantas.jpg" alt="tusllantas" class="logo-img"></a>
       <nav class="main-nav">
-        <a href="index.html">Inicio</a>
-        <a href="catalogo.html" aria-current="page">Catalogo</a>
-        <a href="carrito.html">Carrito</a>
+        <a href="/">Inicio</a>
+        <a href="/catalogo" aria-current="page">Catalogo</a>
+        <a href="/carrito">Carrito</a>
       </nav>
       <div class="header-actions">
-        <a href="iniciar-sesion.html" class="icon-btn">Entrar</a>
-        <a href="carrito.html" class="icon-btn cart-btn">Carrito <span id="cartCount" class="cart-count">0</span></a>
+        <a href="/iniciar-sesion" class="icon-btn">Entrar</a>
+        <a href="/carrito" class="icon-btn cart-btn">Carrito <span id="cartCount" class="cart-count">0</span></a>
       </div>
     </div>
   </header>
 
   <main class="catalog-layout container" id="contenido">
     <aside class="filters-card">
+      <div class="filters-drawer-actions">
+        <button id="mobileFiltersClose" class="filters-drawer-close" type="button" aria-label="Cerrar filtros">Cerrar</button>
+        <button class="btn btn-ghost clear-filters-btn clear-filters-drawer-btn" type="button" data-clear-filters="true">Borrar filtros</button>
+      </div>
       <h1>Filtros</h1>
 
       <div class="filter-group">
         <h2>Marca</h2>
+        <label><input type="checkbox" class="filter-brand" value="altenzo" /> Altenzo</label>
         <label><input type="checkbox" class="filter-brand" value="annaite" /> Annaite</label>
         <label><input type="checkbox" class="filter-brand" value="atlas" /> Atlas</label>
         <label><input type="checkbox" class="filter-brand" value="bfgoodrich" /> BFGoodrich</label>
@@ -47,18 +52,31 @@
         <label><input type="checkbox" class="filter-brand" value="goodyear" /> Goodyear</label>
         <label><input type="checkbox" class="filter-brand" value="hankook" /> Hankook</label>
         <label><input type="checkbox" class="filter-brand" value="i-link" /> I-Link</label>
+        <label><input type="checkbox" class="filter-brand" value="joyroad" /> Joyroad</label>
         <label><input type="checkbox" class="filter-brand" value="kenda" /> Kenda</label>
         <label><input type="checkbox" class="filter-brand" value="kumho" /> Kumho</label>
         <label><input type="checkbox" class="filter-brand" value="laufenn" /> Laufenn</label>
         <label><input type="checkbox" class="filter-brand" value="ling long" /> Ling Long</label>
         <label><input type="checkbox" class="filter-brand" value="maxxis" /> Maxxis</label>
         <label><input type="checkbox" class="filter-brand" value="michelin" /> Michelin</label>
+        <label><input type="checkbox" class="filter-brand" value="nexen" /> Nexen</label>
         <label><input type="checkbox" class="filter-brand" value="pirelli" /> Pirelli</label>
         <label><input type="checkbox" class="filter-brand" value="royal black" /> Royal Black</label>
         <label><input type="checkbox" class="filter-brand" value="sumitomo" /> Sumitomo</label>
+        <label><input type="checkbox" class="filter-brand" value="tornel" /> Tornel</label>
         <label><input type="checkbox" class="filter-brand" value="winrun" /> Winrun</label>
         <label><input type="checkbox" class="filter-brand" value="yokohama" /> Yokohama</label>
         <label><input type="checkbox" class="filter-brand" value="yusta" /> Yusta</label>
+      </div>
+
+      <div class="filter-group">
+        <h2>Ancho</h2>
+        <div id="filterWidthContainer"></div>
+      </div>
+
+      <div class="filter-group">
+        <h2>Perfil</h2>
+        <div id="filterProfileContainer"></div>
       </div>
 
       <div class="filter-group">
@@ -101,7 +119,14 @@
     <section>
       <div class="catalog-head">
         <h2>Catalogo de llantas</h2>
-        <p id="resultsCount">Mostrando 59 resultados</p>
+        <div class="catalog-head-actions">
+          <div class="catalog-mobile-summary">
+            <p id="resultsCount">Mostrando 59 resultados</p>
+            <button id="mobileFiltersToggle" class="btn btn-ghost mobile-filters-toggle" type="button">Filtros</button>
+          </div>
+          <button id="clearFiltersBtn" class="btn btn-ghost clear-filters-btn" type="button" data-clear-filters="true">Borrar filtros</button>
+          <p id="syncSheetStatus" class="sync-status" aria-live="polite"></p>
+        </div>
       </div>
 
       <div class="product-grid" id="catalogGrid">
@@ -111,7 +136,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Goodyear Wrangler Trailrunner AT" />
           <div class="product-content">
             <p class="meta">275/60R20</p>
-            <h3><a href="producto.html">Goodyear Wrangler Trailrunner AT 115S</a></h3>
+            <h3><a href="/producto">Goodyear Wrangler Trailrunner AT 115S</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,799</p>
             <p class="stock in">Disponible</p>
@@ -123,7 +148,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Euzkadi Radial R/T" />
           <div class="product-content">
             <p class="meta">10R15</p>
-            <h3><a href="producto.html">Euzkadi Radial R/T All Terrain 109R LT</a></h3>
+            <h3><a href="/producto">Euzkadi Radial R/T All Terrain 109R LT</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,094</p>
             <p class="stock in">Disponible</p>
@@ -135,7 +160,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RC10 Dynapro XT" />
           <div class="product-content">
             <p class="meta">275/65R18</p>
-            <h3><a href="producto.html">Hankook RC10 Dynapro XT Rugged Terrain 123/120R LT</a></h3>
+            <h3><a href="/producto">Hankook RC10 Dynapro XT Rugged Terrain 123/120R LT</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$6,396</p>
             <p class="stock in">Disponible</p>
@@ -147,7 +172,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RF12 Dynapro AT2" />
           <div class="product-content">
             <p class="meta">275/65R18</p>
-            <h3><a href="producto.html">Hankook RF12 Dynapro AT2 Xtreme 116T</a></h3>
+            <h3><a href="/producto">Hankook RF12 Dynapro AT2 Xtreme 116T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$5,893</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -159,7 +184,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Yusta Conqueror AT" />
           <div class="product-content">
             <p class="meta">35X12.50R17</p>
-            <h3><a href="producto.html">Yusta Conqueror All Terrain 125Q LT</a></h3>
+            <h3><a href="/producto">Yusta Conqueror All Terrain 125Q LT</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$5,893</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -171,7 +196,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Ridgecrawler A/T" />
           <div class="product-content">
             <p class="meta">275/60R20</p>
-            <h3><a href="producto.html">Blackhawk Ridgecrawler A/T HAT51 115T</a></h3>
+            <h3><a href="/producto">Blackhawk Ridgecrawler A/T HAT51 115T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,432</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -183,7 +208,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RF12 265/70R16" />
           <div class="product-content">
             <p class="meta">265/70R16</p>
-            <h3><a href="producto.html">Hankook RF12 Dynapro AT2 Xtreme 112T</a></h3>
+            <h3><a href="/producto">Hankook RF12 Dynapro AT2 Xtreme 112T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,965</p>
             <p class="stock in">Disponible</p>
@@ -195,7 +220,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RF12 245/75R16" />
           <div class="product-content">
             <p class="meta">245/75R16</p>
-            <h3><a href="producto.html">Hankook RF12 Dynapro AT2 Xtreme 111T</a></h3>
+            <h3><a href="/producto">Hankook RF12 Dynapro AT2 Xtreme 111T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,595</p>
             <p class="stock low">Ultimas 5 piezas</p>
@@ -207,7 +232,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RF12 255/70R16" />
           <div class="product-content">
             <p class="meta">255/70R16</p>
-            <h3><a href="producto.html">Hankook RF12 Dynapro AT2 Xtreme 111T</a></h3>
+            <h3><a href="/producto">Hankook RF12 Dynapro AT2 Xtreme 111T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,975</p>
             <p class="stock in">Disponible</p>
@@ -219,7 +244,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Euzkadi Overlander AT2" />
           <div class="product-content">
             <p class="meta">245/70R17</p>
-            <h3><a href="producto.html">Euzkadi Overlander AT2 119/116Q LT</a></h3>
+            <h3><a href="/producto">Euzkadi Overlander AT2 119/116Q LT</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,727</p>
             <p class="stock in">Disponible</p>
@@ -231,7 +256,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Goodyear Wrangler Workhorse AT" />
           <div class="product-content">
             <p class="meta">235/70R16</p>
-            <h3><a href="producto.html">Goodyear Wrangler Workhorse AT 109T XL</a></h3>
+            <h3><a href="/producto">Goodyear Wrangler Workhorse AT 109T XL</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,535</p>
             <p class="stock in">Disponible</p>
@@ -243,7 +268,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Kumho AT52 Road Venture" />
           <div class="product-content">
             <p class="meta">255/70R16</p>
-            <h3><a href="producto.html">Kumho AT52 Road Venture 111T</a></h3>
+            <h3><a href="/producto">Kumho AT52 Road Venture 111T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,468</p>
             <p class="stock in">Disponible</p>
@@ -255,7 +280,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Kumho AT51 Road Venture" />
           <div class="product-content">
             <p class="meta">215/75R14</p>
-            <h3><a href="producto.html">Kumho AT51 Road Venture 98T</a></h3>
+            <h3><a href="/producto">Kumho AT51 Road Venture 98T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$2,650</p>
             <p class="stock in">Disponible</p>
@@ -267,7 +292,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Kumho AT52 Road Venture LT" />
           <div class="product-content">
             <p class="meta">225/75R16</p>
-            <h3><a href="producto.html">Kumho AT52 Road Venture LT 115/112S</a></h3>
+            <h3><a href="/producto">Kumho AT52 Road Venture LT 115/112S</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,849</p>
             <p class="stock in">Disponible</p>
@@ -279,7 +304,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="BFGoodrich Trail-Terrain T/A" />
           <div class="product-content">
             <p class="meta">235/65R17</p>
-            <h3><a href="producto.html">BFGoodrich Trail-Terrain T/A 104H</a></h3>
+            <h3><a href="/producto">BFGoodrich Trail-Terrain T/A 104H</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,626</p>
             <p class="stock in">Disponible</p>
@@ -291,7 +316,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Laufenn LC01 Xfit AT" />
           <div class="product-content">
             <p class="meta">275/70R18</p>
-            <h3><a href="producto.html">Laufenn LC01 Xfit AT LT 125/122S</a></h3>
+            <h3><a href="/producto">Laufenn LC01 Xfit AT LT 125/122S</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,863</p>
             <p class="stock low">Ultimas 6 piezas</p>
@@ -303,7 +328,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Cooper Evolution ATT" />
           <div class="product-content">
             <p class="meta">225/75R16</p>
-            <h3><a href="producto.html">Cooper Evolution ATT LT 115/112R</a></h3>
+            <h3><a href="/producto">Cooper Evolution ATT LT 115/112R</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,466</p>
             <p class="stock in">Disponible</p>
@@ -315,7 +340,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Kumho AT51 Road Venture 245/65R17" />
           <div class="product-content">
             <p class="meta">245/65R17</p>
-            <h3><a href="producto.html">Kumho AT51 Road Venture 105T</a></h3>
+            <h3><a href="/producto">Kumho AT51 Road Venture 105T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$3,483</p>
             <p class="stock in">Disponible</p>
@@ -327,7 +352,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Hankook RF12 275/60R20" />
           <div class="product-content">
             <p class="meta">275/60R20</p>
-            <h3><a href="producto.html">Hankook RF12 Dynapro AT2 Xtreme LT 119/116S</a></h3>
+            <h3><a href="/producto">Hankook RF12 Dynapro AT2 Xtreme LT 119/116S</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$6,449</p>
             <p class="stock in">Disponible</p>
@@ -339,7 +364,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Yokohama Geolandar A/T4" />
           <div class="product-content">
             <p class="meta">275/65R18</p>
-            <h3><a href="producto.html">Yokohama Geolandar A/T4 G018 116H</a></h3>
+            <h3><a href="/producto">Yokohama Geolandar A/T4 G018 116H</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$5,416</p>
             <p class="stock in">Disponible</p>
@@ -351,7 +376,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="General Grabber ATX" />
           <div class="product-content">
             <p class="meta">275/70R18</p>
-            <h3><a href="producto.html">General Grabber ATX LT 125/122R</a></h3>
+            <h3><a href="/producto">General Grabber ATX LT 125/122R</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$6,949</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -363,7 +388,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Firestone Destination X/T" />
           <div class="product-content">
             <p class="meta">31X10.50R15</p>
-            <h3><a href="producto.html">Firestone Destination X/T LT 109R</a></h3>
+            <h3><a href="/producto">Firestone Destination X/T LT 109R</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$4,147</p>
             <p class="stock in">Disponible</p>
@@ -375,7 +400,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Royal Black Terra Force" />
           <div class="product-content">
             <p class="meta">235/70R16</p>
-            <h3><a href="producto.html">Royal Black Terra Force AT 106T</a></h3>
+            <h3><a href="/producto">Royal Black Terra Force AT 106T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$2,102</p>
             <p class="stock in">Disponible</p>
@@ -387,7 +412,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Ridgecrawler A/T 245/60R18" />
           <div class="product-content">
             <p class="meta">245/60R18</p>
-            <h3><a href="producto.html">Blackhawk Ridgecrawler A/T HAT51 105T</a></h3>
+            <h3><a href="/producto">Blackhawk Ridgecrawler A/T HAT51 105T</a></h3>
             <p class="meta">All Terrain</p>
             <p class="price">$2,749</p>
             <p class="stock low">Ultimas 2 piezas</p>
@@ -400,7 +425,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=900&q=80" alt="Duraturn Travia M/T" />
           <div class="product-content">
             <p class="meta">33X12.50R18</p>
-            <h3><a href="producto.html">Duraturn Travia M/T LT 118Q</a></h3>
+            <h3><a href="/producto">Duraturn Travia M/T LT 118Q</a></h3>
             <p class="meta">Mud Terrain</p>
             <p class="price">$4,389</p>
             <p class="stock in">Disponible</p>
@@ -412,7 +437,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Ridgecrawler 235/80R17" />
           <div class="product-content">
             <p class="meta">235/80R17</p>
-            <h3><a href="producto.html">Blackhawk Ridgecrawler A/T 120/117R LT</a></h3>
+            <h3><a href="/producto">Blackhawk Ridgecrawler A/T 120/117R LT</a></h3>
             <p class="meta">Mud Terrain</p>
             <p class="price">$3,353</p>
             <p class="stock in">Disponible</p>
@@ -424,7 +449,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Ridgecrawler 245/70R17" />
           <div class="product-content">
             <p class="meta">245/70R17</p>
-            <h3><a href="producto.html">Blackhawk Ridgecrawler A/T 119/116S LT</a></h3>
+            <h3><a href="/producto">Blackhawk Ridgecrawler A/T 119/116S LT</a></h3>
             <p class="meta">Mud Terrain</p>
             <p class="price">$3,324</p>
             <p class="stock in">Disponible</p>
@@ -437,7 +462,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Atlas A50 SUV" />
           <div class="product-content">
             <p class="meta">225/60R18</p>
-            <h3><a href="producto.html">Atlas A50 SUV 100H</a></h3>
+            <h3><a href="/producto">Atlas A50 SUV 100H</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$2,338</p>
             <p class="stock in">Disponible</p>
@@ -449,7 +474,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Atlas AS380" />
           <div class="product-content">
             <p class="meta">215/55R17</p>
-            <h3><a href="producto.html">Atlas AS380 94V</a></h3>
+            <h3><a href="/producto">Atlas AS380 94V</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,792</p>
             <p class="stock low">Ultima pieza</p>
@@ -461,7 +486,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Ling Long Comfort Master" />
           <div class="product-content">
             <p class="meta">205/50R17</p>
-            <h3><a href="producto.html">Ling Long Comfort Master 93W</a></h3>
+            <h3><a href="/producto">Ling Long Comfort Master 93W</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,518</p>
             <p class="stock low">Ultimas 7 piezas</p>
@@ -473,7 +498,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Street-H HH11" />
           <div class="product-content">
             <p class="meta">175/60R15</p>
-            <h3><a href="producto.html">Blackhawk Street-H HH11 81H</a></h3>
+            <h3><a href="/producto">Blackhawk Street-H HH11 81H</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,245</p>
             <p class="stock in">Disponible</p>
@@ -485,7 +510,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Yokohama Bluearth AE50" />
           <div class="product-content">
             <p class="meta">185/55R16</p>
-            <h3><a href="producto.html">Yokohama Bluearth A AE50 87H XL</a></h3>
+            <h3><a href="/producto">Yokohama Bluearth A AE50 87H XL</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$2,579</p>
             <p class="stock in">Disponible</p>
@@ -497,7 +522,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook K715 Optimo" />
           <div class="product-content">
             <p class="meta">155/70R14</p>
-            <h3><a href="producto.html">Hankook K715 Optimo 77T OE</a></h3>
+            <h3><a href="/producto">Hankook K715 Optimo 77T OE</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,503</p>
             <p class="stock in">Disponible</p>
@@ -509,7 +534,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook H735 Kinergy ST" />
           <div class="product-content">
             <p class="meta">205/70R14</p>
-            <h3><a href="producto.html">Hankook H735 Kinergy ST 95T</a></h3>
+            <h3><a href="/producto">Hankook H735 Kinergy ST 95T</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$2,050</p>
             <p class="stock in">Disponible</p>
@@ -521,7 +546,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook H436 Kinergy GT" />
           <div class="product-content">
             <p class="meta">185/65R15</p>
-            <h3><a href="producto.html">Hankook H436 Kinergy GT All Season 88H OE</a></h3>
+            <h3><a href="/producto">Hankook H436 Kinergy GT All Season 88H OE</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,911</p>
             <p class="stock in">Disponible</p>
@@ -533,7 +558,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook H457 Ventus V2" />
           <div class="product-content">
             <p class="meta">205/45R17</p>
-            <h3><a href="producto.html">Hankook H457 Ventus V2 Concept2 88V XL</a></h3>
+            <h3><a href="/producto">Hankook H457 Ventus V2 Concept2 88V XL</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$2,676</p>
             <p class="stock low">Ultimas 5 piezas</p>
@@ -545,7 +570,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Blackhawk Street-H 225/45R18" />
           <div class="product-content">
             <p class="meta">225/45R18</p>
-            <h3><a href="producto.html">Blackhawk Street-H HH11 95W XL</a></h3>
+            <h3><a href="/producto">Blackhawk Street-H HH11 95W XL</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,928</p>
             <p class="stock low">Ultimas 2 piezas</p>
@@ -557,7 +582,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Kenda KR205 Vezda Touring" />
           <div class="product-content">
             <p class="meta">205/55R16</p>
-            <h3><a href="producto.html">Kenda KR205 Vezda Touring A/S 91V</a></h3>
+            <h3><a href="/producto">Kenda KR205 Vezda Touring A/S 91V</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$1,569</p>
             <p class="stock in">Disponible</p>
@@ -569,7 +594,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Maxxis Bravo HT-770" />
           <div class="product-content">
             <p class="meta">255/65R17</p>
-            <h3><a href="producto.html">Maxxis Bravo HT-770 110H</a></h3>
+            <h3><a href="/producto">Maxxis Bravo HT-770 110H</a></h3>
             <p class="meta">Ciudad</p>
             <p class="price">$2,892</p>
             <p class="stock in">Disponible</p>
@@ -582,7 +607,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="BFGoodrich Advantage Touring" />
           <div class="product-content">
             <p class="meta">195/50R15</p>
-            <h3><a href="producto.html">BFGoodrich Advantage Touring 86V XL</a></h3>
+            <h3><a href="/producto">BFGoodrich Advantage Touring 86V XL</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$3,371</p>
             <p class="stock low">Ultimas 3 piezas</p>
@@ -594,7 +619,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Continental ContiEcoContact 5" />
           <div class="product-content">
             <p class="meta">245/45R18</p>
-            <h3><a href="producto.html">Continental ContiEcoContact 5 96W</a></h3>
+            <h3><a href="/producto">Continental ContiEcoContact 5 96W</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$5,641</p>
             <p class="stock in">Disponible</p>
@@ -606,7 +631,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Federal SS595" />
           <div class="product-content">
             <p class="meta">235/40R18</p>
-            <h3><a href="producto.html">Federal SS595 91W</a></h3>
+            <h3><a href="/producto">Federal SS595 91W</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$1,388</p>
             <p class="stock low">Ultimas 2 piezas</p>
@@ -618,7 +643,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Continental Premium Contact 6" />
           <div class="product-content">
             <p class="meta">205/55R16</p>
-            <h3><a href="producto.html">Continental Premium Contact 6 91V</a></h3>
+            <h3><a href="/producto">Continental Premium Contact 6 91V</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$2,094</p>
             <p class="stock low">Ultimas 2 piezas</p>
@@ -630,7 +655,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Pirelli P4 Persist All Season Plus" />
           <div class="product-content">
             <p class="meta">195/60R15</p>
-            <h3><a href="producto.html">Pirelli P4 Persist All Season Plus 88H</a></h3>
+            <h3><a href="/producto">Pirelli P4 Persist All Season Plus 88H</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$2,493</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -642,7 +667,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Michelin Primacy A/S" />
           <div class="product-content">
             <p class="meta">215/60R17</p>
-            <h3><a href="producto.html">Michelin Primacy A/S 96H</a></h3>
+            <h3><a href="/producto">Michelin Primacy A/S 96H</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$4,116</p>
             <p class="stock low">Ultimas 5 piezas</p>
@@ -654,7 +679,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Continental Cross Contact UHP" />
           <div class="product-content">
             <p class="meta">295/40R21</p>
-            <h3><a href="producto.html">Continental Cross Contact UHP 111W XL OE</a></h3>
+            <h3><a href="/producto">Continental Cross Contact UHP 111W XL OE</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$6,166</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -666,7 +691,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Pirelli Cinturato P1 Plus" />
           <div class="product-content">
             <p class="meta">225/40R18</p>
-            <h3><a href="producto.html">Pirelli Cinturato P1 Plus EcoImpact 92W XL</a></h3>
+            <h3><a href="/producto">Pirelli Cinturato P1 Plus EcoImpact 92W XL</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$3,022</p>
             <p class="stock in">Disponible</p>
@@ -678,7 +703,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Federal SS595 245/40R18" />
           <div class="product-content">
             <p class="meta">245/40R18</p>
-            <h3><a href="producto.html">Federal SS595 93W</a></h3>
+            <h3><a href="/producto">Federal SS595 93W</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$1,792</p>
             <p class="stock in">Disponible</p>
@@ -690,7 +715,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Pirelli Pzero All Season Plus" />
           <div class="product-content">
             <p class="meta">235/45R17</p>
-            <h3><a href="producto.html">Pirelli Pzero All Season Plus 97W XL</a></h3>
+            <h3><a href="/producto">Pirelli Pzero All Season Plus 97W XL</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$3,295</p>
             <p class="stock low">Ultimas 7 piezas</p>
@@ -702,7 +727,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Yokohama Advan Apex V601" />
           <div class="product-content">
             <p class="meta">235/35R19</p>
-            <h3><a href="producto.html">Yokohama Advan Apex V601 91Y</a></h3>
+            <h3><a href="/producto">Yokohama Advan Apex V601 91Y</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$4,546</p>
             <p class="stock in">Disponible</p>
@@ -714,7 +739,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Goodyear Assurance Finesse" />
           <div class="product-content">
             <p class="meta">215/50R18</p>
-            <h3><a href="producto.html">Goodyear Assurance Finesse 92H</a></h3>
+            <h3><a href="/producto">Goodyear Assurance Finesse 92H</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$3,569</p>
             <p class="stock in">Disponible</p>
@@ -726,7 +751,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1608855015067-269318ec14c3?auto=format&fit=crop&w=900&q=80" alt="Sumitomo HTR 200" />
           <div class="product-content">
             <p class="meta">225/50R15</p>
-            <h3><a href="producto.html">Sumitomo HTR 200 91H</a></h3>
+            <h3><a href="/producto">Sumitomo HTR 200 91H</a></h3>
             <p class="meta">Carretera</p>
             <p class="price">$1,997</p>
             <p class="stock in">Disponible</p>
@@ -739,7 +764,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Winrun R330 Runflat" />
           <div class="product-content">
             <p class="meta">205/45R17</p>
-            <h3><a href="producto.html">Winrun R330 Runflat 84V</a></h3>
+            <h3><a href="/producto">Winrun R330 Runflat 84V</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$2,619</p>
             <p class="stock in">Disponible</p>
@@ -751,7 +776,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook K127B Ventus S1 EVO3 Runflat" />
           <div class="product-content">
             <p class="meta">225/45R18</p>
-            <h3><a href="producto.html">Hankook K127B Ventus S1 EVO3 Runflat 95Y XL</a></h3>
+            <h3><a href="/producto">Hankook K127B Ventus S1 EVO3 Runflat 95Y XL</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$5,022</p>
             <p class="stock in">Disponible</p>
@@ -763,7 +788,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Pirelli Pzero PZ4 Runflat" />
           <div class="product-content">
             <p class="meta">225/35R20</p>
-            <h3><a href="producto.html">Pirelli Pzero PZ4 Runflat 90Y XL OE</a></h3>
+            <h3><a href="/producto">Pirelli Pzero PZ4 Runflat 90Y XL OE</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$11,849</p>
             <p class="stock low">Ultimas 4 piezas</p>
@@ -775,7 +800,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Continental Cross Contact LX Sport" />
           <div class="product-content">
             <p class="meta">255/45R20</p>
-            <h3><a href="producto.html">Continental Cross Contact LX Sport 105V XL</a></h3>
+            <h3><a href="/producto">Continental Cross Contact LX Sport 105V XL</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$7,107</p>
             <p class="stock low">Ultima pieza</p>
@@ -787,7 +812,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Hankook K127B Ventus S1 EVO3 225/45R17" />
           <div class="product-content">
             <p class="meta">225/45R17</p>
-            <h3><a href="producto.html">Hankook K127B Ventus S1 EVO3 Runflat 94Y XL</a></h3>
+            <h3><a href="/producto">Hankook K127B Ventus S1 EVO3 Runflat 94Y XL</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$3,943</p>
             <p class="stock in">Disponible</p>
@@ -799,7 +824,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Winrun R330 Runflat 255/50R19" />
           <div class="product-content">
             <p class="meta">255/50R19</p>
-            <h3><a href="producto.html">Winrun R330 Runflat 103V</a></h3>
+            <h3><a href="/producto">Winrun R330 Runflat 103V</a></h3>
             <p class="meta">Runflat</p>
             <p class="price">$3,569</p>
             <p class="stock in">Disponible</p>
@@ -812,7 +837,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1635072361704-7f39fba33486?auto=format&fit=crop&w=900&q=80" alt="I-Link L-Power 28" />
           <div class="product-content">
             <p class="meta">165R14</p>
-            <h3><a href="producto.html">I-Link L-Power 28 LT 91/90R</a></h3>
+            <h3><a href="/producto">I-Link L-Power 28 LT 91/90R</a></h3>
             <p class="meta">Carga</p>
             <p class="price">$1,388</p>
             <p class="stock in">Disponible</p>
@@ -824,7 +849,7 @@
           <img loading="lazy" src="https://images.unsplash.com/photo-1635072361704-7f39fba33486?auto=format&fit=crop&w=900&q=80" alt="Annaite AN900" />
           <div class="product-content">
             <p class="meta">195R15</p>
-            <h3><a href="producto.html">Annaite AN900 LT 106/104R</a></h3>
+            <h3><a href="/producto">Annaite AN900 LT 106/104R</a></h3>
             <p class="meta">Carga</p>
             <p class="price">$1,926</p>
             <p class="stock low">Ultima pieza</p>
@@ -852,13 +877,13 @@
       </div>
       <div>
         <h4>Tel / WhatsApp</h4>
-        <p>Lopez Mateos: <a href="https://wa.me/527229145544">722 914 5544</a><br>Metepec: <a href="https://wa.me/527222474592">722 247 4592</a><br>Pino Suarez / Carranza: <a href="https://wa.me/527294464440">729 446 4440</a><br>Maps: <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Adolfo+Lopez+Mateos+Toluca" target="_blank" rel="noopener noreferrer">Lopez Mateos</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Metepec" target="_blank" rel="noopener noreferrer">Metepec</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Pino+Suarez+Toluca" target="_blank" rel="noopener noreferrer">Pino Suarez</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Jesus+Carranza+Toluca" target="_blank" rel="noopener noreferrer">Carranza</a><br><a href="mailto:somostusllantas@gmail.com">somostusllantas@gmail.com</a></p>
+        <p>Lopez Mateos: <a href="tel:+527229145544">722 914 5544 (Oficina)</a> | <a href="https://wa.me/527222474592">722 247 4592 (Cel)</a><br>Metepec: <a href="https://wa.me/527222474592">722 247 4592</a><br>Pino Suarez / Carranza: <a href="https://wa.me/527222474592">722 247 4592</a><br>Maps: <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Adolfo+Lopez+Mateos+Toluca" target="_blank" rel="noopener noreferrer">Lopez Mateos</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Metepec" target="_blank" rel="noopener noreferrer">Metepec</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Pino+Suarez+Toluca" target="_blank" rel="noopener noreferrer">Pino Suarez</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Jesus+Carranza+Toluca" target="_blank" rel="noopener noreferrer">Carranza</a><br><a href="mailto:somostusllantas@gmail.com">somostusllantas@gmail.com</a></p>
       </div>
     </div>
   </footer>
 
-  <script src="app.js" defer></script>
-  <a href="https://wa.me/527229145544?text=Hola%2C%20me%20interesa%20una%20llanta" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+  <script src="app.js?v=20260513c" defer></script>
+  <a href="https://wa.me/527222474592?text=Hola%2C%20me%20interesa%20una%20llanta" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.118 1.524 5.847L.057 23.882a.5.5 0 0 0 .614.612l6.089-1.461A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.882 9.882 0 0 1-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374A9.86 9.86 0 0 1 2.1 12C2.1 6.533 6.533 2.1 12 2.1c5.467 0 9.9 4.433 9.9 9.9 0 5.467-4.433 9.9-9.9 9.9z"/></svg>
     WhatsApp
   </a>

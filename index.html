@@ -6,42 +6,57 @@
 	<title>tusllantas | Llantas en línea para todo México</title>
 	<meta
 		name="description"
-		content="Tusllantas Toluca - Compra llantas en linea con atencion en sucursal y envios nacionales proximamente. Adolfo Lopez Mateos 1307, Nueva Oxtotitlan, Toluca. Tel 722 914 5544."
+		Tusllantas Toluca - Compra llantas en linea con atencion en sucursal y envios nacionales proximamente. Adolfo Lopez Mateos 1307, Nueva Oxtotitlan, Toluca. Tel 722 247 4592."
 	/>
 	<meta name="keywords" content="llantas en línea, llantas méxico, llantas por medida, rin, all terrain, mud terrain" />
 	<meta name="author" content="tusllantas" />
 	<meta property="og:title" content="tusllantas | Tienda profesional de llantas" />
-	<meta property="og:description" content="Tienda de llantas en Toluca con atencion en sucursal y envios nacionales proximamente. Adolfo Lopez Mateos 1307. Tel 722 914 5544." />
+	<meta property="og:description" content="Tienda de llantas en Toluca con atencion en sucursal y envios nacionales proximamente. Adolfo Lopez Mateos 1307. Tel 722 247 4592." />
 	<meta property="og:type" content="website" />
 	<meta property="og:locale" content="es_MX" />
+	<meta property="og:image" content="https://tusllantas.mx/logotusllantas.jpg" />
+	<meta property="og:image:alt" content="Logo de tusllantas" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="tusllantas | Tienda profesional de llantas" />
+	<meta name="twitter:description" content="Tienda de llantas en Toluca con atencion en sucursal y envios nacionales proximamente." />
+	<meta name="twitter:image" content="https://tusllantas.mx/logotusllantas.jpg" />
 	<meta name="theme-color" content="#101317" />
+	<link rel="icon" type="image/jpeg" href="/logotusllantas.jpg" />
+	<link rel="shortcut icon" href="/logotusllantas.jpg" />
+	<link rel="apple-touch-icon" href="/logotusllantas.jpg" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 	<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-	<link rel="stylesheet" href="styles.css" />
+	<link rel="stylesheet" href="styles.css?v=20260513a" />
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "Organization",
+			"name": "tusllantas",
+			"url": "https://tusllantas.mx",
+			"logo": "https://tusllantas.mx/logotusllantas.jpg"
+		}
+	</script>
 </head>
 <body>
 	<a class="skip-link" href="#contenido">Saltar al contenido</a>
 
 	<header class="site-header">
 		<div class="container nav-wrap">
-			<a class="logo" href="index.html" aria-label="Inicio tusllantas">
+			<a class="logo" href="/" aria-label="Inicio tusllantas">
 				<img src="logotusllantas.jpg" alt="tusllantas" class="logo-img">
 			</a>
 
 			<button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">Menu</button>
 
 			<nav class="main-nav" id="mainNav">
-				<a href="catalogo.html">Catalogo</a>
+				<a href="/catalogo">Catalogo</a>
 				<a href="#productos">Productos</a>
 				<a href="#sucursales">Sucursales</a>
 			</nav>
 			<div class="header-actions">
-				<label class="header-search" for="headerSearch">
-					<input id="headerSearch" type="search" placeholder="Buscar marca o medida" />
-				</label>
-				<a href="iniciar-sesion.html" class="icon-btn" aria-label="Iniciar sesion">Entrar</a>
-				<a href="carrito.html" class="icon-btn cart-btn" aria-label="Carrito">
+				<a href="/iniciar-sesion" class="icon-btn" aria-label="Iniciar sesion">Entrar</a>
+				<a href="/carrito" class="icon-btn cart-btn" aria-label="Carrito">
 					Carrito
 					<span id="cartCount" class="cart-count">0</span>
 				</a>
@@ -53,11 +68,12 @@
 		<section class="hero">
 			<div class="container hero-grid">
 				<div class="hero-copy reveal-up">
+					<img src="logotusllantasnaranjanegro-removebg-preview.png?v=20260513a" alt="tusllantas" class="hero-logo">
 					<p class="eyebrow">Compra rapida de llantas</p>
 					<h1>Encuentra tu medida y compra hoy</h1>
 					<p>Inventario real, precio claro y atencion en sucursal. Envios nacionales, proximamente disponibles.</p>
 					<div class="hero-cta">
-						<a class="btn btn-primary" href="catalogo.html">Explorar catalogo</a>
+						<a class="btn btn-primary" href="/catalogo">Explorar catalogo</a>
 						<a class="btn btn-ghost" href="#buscador">Buscar por medida</a>
 					</div>
 					<ul class="quick-trust">
@@ -67,39 +83,95 @@
 				</div>
 				<div class="hero-panel reveal-up delay-1">
 					<h2 id="buscador">Buscador inteligente de llantas</h2>
-					<form class="finder-form" action="catalogo.html" method="get">
+					<p class="finder-intro">Selecciona medida, rin o marca y encuentra opciones al instante.</p>
+					<form class="finder-form" action="/catalogo" method="get">
 						<div class="finder-row">
 							<label>
 								Ancho
 								<select name="ancho">
 									<option value="">Selecciona</option>
+									<option>155</option>
+									<option>165</option>
+									<option>175</option>
+									<option>185</option>
 									<option>195</option>
 									<option>205</option>
+									<option>215</option>
 									<option>225</option>
+									<option>235</option>
 									<option>245</option>
+									<option>255</option>
 									<option>265</option>
+									<option>275</option>
+									<option>27X</option>
+									<option>28X</option>
+									<option>29X</option>
+									<option>30X</option>
+									<option>285</option>
+									<option>295</option>
+									<option>305</option>
+									<option>315</option>
+									<option>31X</option>
+									<option>32X</option>
+									<option>325</option>
+									<option>335</option>
+									<option>33X</option>
+									<option>34X</option>
+									<option>345</option>
+									<option>355</option>
+									<option>35X</option>
+									<option>365</option>
+									<option>375</option>
+									<option>385</option>
+									<option>395</option>
 								</select>
 							</label>
 							<label>
 								Perfil
 								<select name="perfil">
 									<option value="">Selecciona</option>
+									<option>8.50</option>
+									<option>10.50</option>
+									<option>12.50</option>
+									<option>25</option>
+									<option>30</option>
+									<option>35</option>
+									<option>40</option>
 									<option>45</option>
+									<option>50</option>
 									<option>55</option>
 									<option>60</option>
 									<option>65</option>
 									<option>70</option>
+									<option>75</option>
+									<option>80</option>
+									<option>85</option>
+									<option>90</option>
+									<option>95</option>
 								</select>
 							</label>
 							<label>
 								Rin
 								<select name="rin">
 									<option value="">Selecciona</option>
+									<option>9</option>
+									<option>10</option>
+									<option>11</option>
+									<option>12</option>
+									<option>13</option>
+									<option>14</option>
 									<option>15</option>
 									<option>16</option>
 									<option>17</option>
 									<option>18</option>
+									<option>19</option>
 									<option>20</option>
+									<option>21</option>
+									<option>22</option>
+									<option>23</option>
+									<option>24</option>
+									<option>25</option>
+									<option>26</option>
 								</select>
 							</label>
 						</div>
@@ -111,9 +183,9 @@
 
 						<div class="finder-actions">
 							<button class="btn btn-primary" type="submit">Buscar llantas</button>
-							<a href="https://wa.me/527229145544?text=Hola%2C%20quisiera%20asesor%C3%ADa%20para%20encontrar%20mis%20llantas" class="btn btn-support" target="_blank" rel="noopener noreferrer">
+					<a href="https://wa.me/527222474592?text=Hola%2C%20quisiera%20asesor%C3%ADa%20para%20encontrar%20mis%20llantas" class="btn btn-support" target="_blank" rel="noopener noreferrer">
 								<span class="support-icon">💬</span>
-								<span>Asesorar con un Experto</span>
+								<span>Asesoria con experto</span>
 							</a>
 						</div>
 					</form>
@@ -131,10 +203,16 @@
 				<div class="brand-strip" aria-label="Lista de marcas">
 					<div class="brand-logo"><img src="logos/Bridgestone_(9).png" alt="Bridgestone" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Firestone_logo_PNG_(12).png" alt="Firestone" loading="lazy"></div>
+					<div class="brand-logo"><img src="altenzologo.jpeg" alt="Altenzo" loading="lazy"></div>
+					<div class="brand-logo"><img src="joyroadlogo.jpeg" alt="Joyroad" loading="lazy"></div>
+					<div class="brand-logo"><img src="royalblacklogo.jpeg" alt="Royalblack" loading="lazy"></div>
+					<div class="brand-logo"><img src="nexenlogo.jpeg" alt="Nexen" loading="lazy"></div>
+					<div class="brand-logo"><img src="tornellogo.jpeg" alt="Tornel" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/goodyear-seeklogo.png" alt="Goodyear" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Michelin-Logo-PNG3.png" alt="Michelin" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Continental_logo_PNG_(11).png" alt="Continental" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Hankook_logo_PNG_(4).png" alt="Hankook" loading="lazy"></div>
+					<div class="brand-logo"><img src="sumitonlogo.jpeg" alt="Sumitomo" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Pirelli_logo_PNG_(6).png" alt="Pirelli" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Toyo_Tires_logo_PNG_(7).png" alt="Toyo Tires" loading="lazy"></div>
 					<div class="brand-logo"><img src="logos/Yokohama_logo_PNG_(3).png" alt="Yokohama" loading="lazy"></div>
@@ -150,15 +228,15 @@
 					<p class="eyebrow">Productos destacados</p>
 					<h2>Compara modelos y precio</h2>
 					<p class="section-subtitle">Revisa disponibilidad y agrega al carrito.</p>
-					<a href="catalogo.html" class="text-link">Ver todo el catalogo</a>
+					<a href="/catalogo" class="text-link">Ver todo el catalogo</a>
 				</div>
 
 				<div class="product-grid" id="homeFeaturedGrid">
 					<article class="product-card" data-price="2890" data-brand="TitanRoad" data-rin="17" data-type="ciudad" data-stock="disponible">
-						<img loading="lazy" src="https://images.unsplash.com/photo-1609429016840-16dc8feba7b8?auto=format&fit=crop&w=900&q=80" alt="Llanta TitanRoad UrbanGrip" />
+						<img loading="lazy" src="data/image-backup/0565-lt275-60r20-goodyear-wrangler-trail-runner-at-115s.jpg" alt="Llanta TitanRoad UrbanGrip" />
 						<div class="product-content">
 							<p class="meta">225/60 R17</p>
-							<h3><a href="producto.html">TitanRoad UrbanGrip XT</a></h3>
+							<h3><a href="/producto">TitanRoad UrbanGrip XT</a></h3>
 							<p class="meta">Uso: Ciudad y carretera</p>
 							<p class="price"><span class="old">$3,250</span> $2,890</p>
 							<p class="stock in">Inventario: Disponible</p>
@@ -167,10 +245,10 @@
 					</article>
 
 					<article class="product-card" data-price="3199" data-brand="SierraMax" data-rin="18" data-type="all-terrain" data-stock="disponible">
-						<img loading="lazy" src="https://images.unsplash.com/photo-1575797123336-58f4e7a6ce91?auto=format&fit=crop&w=900&q=80" alt="Llanta SierraMax AT Pro" />
+						<img loading="lazy" src="data/image-backup/0297-p265-70r16-cooper-evolution-att-112t.webp" alt="Llanta SierraMax AT Pro" />
 						<div class="product-content">
 							<p class="meta">265/65 R18</p>
-							<h3><a href="producto.html">SierraMax AT Pro 8PR</a></h3>
+							<h3><a href="/producto">SierraMax AT Pro 8PR</a></h3>
 							<p class="meta">Uso: All Terrain</p>
 							<p class="price">$3,199</p>
 							<p class="stock in">Inventario: 14 piezas</p>
@@ -179,10 +257,10 @@
 					</article>
 
 					<article class="product-card" data-price="4070" data-brand="RangerPeak" data-rin="20" data-type="mud-terrain" data-stock="limitado">
-						<img loading="lazy" src="https://images.unsplash.com/photo-1517524008697-84bbe3c3fd98?auto=format&fit=crop&w=900&q=80" alt="Llanta RangerPeak MT Claw" />
+						<img loading="lazy" src="data/image-backup/0571-p285-45r22-pirelli-scorpion-all-season-plus-3-114h-xl.jpg" alt="Llanta RangerPeak MT Claw" />
 						<div class="product-content">
 							<p class="meta">285/55 R20</p>
-							<h3><a href="producto.html">RangerPeak MT Claw</a></h3>
+							<h3><a href="/producto">RangerPeak MT Claw</a></h3>
 							<p class="meta">Uso: Mud Terrain</p>
 							<p class="price"><span class="old">$4,490</span> $4,070</p>
 							<p class="stock low">Inventario: Ultimas 4</p>
@@ -201,8 +279,8 @@
 					<p>Te ayudamos por WhatsApp o compra directa en el catalogo.</p>
 				</div>
 				<div class="conversion-actions">
-					<a class="btn btn-primary" href="catalogo.html">Ver catalogo completo</a>
-					<a class="btn btn-ghost" href="https://wa.me/527229145544" target="_blank" rel="noopener noreferrer">Cotizar por WhatsApp</a>
+					<a class="btn btn-primary" href="/catalogo">Ver catalogo completo</a>
+									<a class="btn btn-ghost" href="https://wa.me/527222474592" target="_blank" rel="noopener noreferrer">Cotizar por WhatsApp</a>
 				</div>
 			</div>
 		</section>
@@ -219,7 +297,8 @@
 						<h3>Lopez Mateos</h3>
 						<p>Adolfo Lopez Mateos 1307, Nueva Oxtotitlan, 50100 Toluca, Mex.</p>
 						<p>Cierra 7 PM &mdash; Lun a Sab</p>
-						<a href="https://wa.me/527229145544" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">722 914 5544</a>
+						<a href="tel:+527229145544" class="btn btn-ghost">Oficina: 722 914 5544</a>
+						<a href="https://wa.me/527222474592" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Cel: 722 247 4592</a>
 						<a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Adolfo+Lopez+Mateos+Toluca" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Ver en Google Maps</a>
 					</article>
 					<article class="branch-card">
@@ -233,7 +312,7 @@
 						<h3>Pino Suarez</h3>
 						<p>Alfredo Zarate Albarran 201, Blvr. Jose Maria Pino Suarez, 50140 Toluca, Mex.</p>
 						<p>Cierra 7 PM &mdash; Lun a Sab</p>
-						<a href="https://wa.me/527294464440" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">729 446 4440</a>
+						<a href="https://wa.me/527222474592" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">722 247 4592</a>
 						<a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Pino+Suarez+Toluca" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">Ver en Google Maps</a>
 					</article>
 					<article class="branch-card">
@@ -251,7 +330,7 @@
 	<footer class="site-footer">
 		<div class="container footer-grid">
 			<div>
-				<a class="logo" href="index.html">
+				<a class="logo" href="/">
 					<img src="logotusllantas.jpg" alt="tusllantas" class="logo-img logo-img--footer">
 				</a>
 				<p>Plataforma mexicana para compra profesional de llantas en linea.</p>
@@ -259,9 +338,9 @@
 			<div>
 				<h4>Contacto</h4>
 				<ul>
-						<li>Lopez Mateos: <a href="tel:+527229145544">722 914 5544</a></li>
-					<li>Metepec: <a href="tel:+527222474592">722 247 4592</a></li>
-					<li>Pino Suarez / Jesus Carranza: <a href="tel:+527294464440">729 446 4440</a></li>
+				<li>Lopez Mateos: <a href="tel:+527229145544">722 914 5544 (Oficina)</a> | <a href="https://wa.me/527222474592">722 247 4592 (Cel)</a></li>
+				<li>Metepec: <a href="tel:+527222474592">722 247 4592</a></li>
+				<li>Pino Suarez / Jesus Carranza: <a href="tel:+527222474592">722 247 4592</a></li>
 					<li>Maps: <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Adolfo+Lopez+Mateos+Toluca" target="_blank" rel="noopener noreferrer">Lopez Mateos</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Metepec" target="_blank" rel="noopener noreferrer">Metepec</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Pino+Suarez+Toluca" target="_blank" rel="noopener noreferrer">Pino Suarez</a> | <a href="https://www.google.com/maps/search/?api=1&query=Tusllantas+Jesus+Carranza+Toluca" target="_blank" rel="noopener noreferrer">Carranza</a></li>
 					<li>Toluca y Metepec &mdash; Cierra 7 PM</li>
 					<li><a href="mailto:somostusllantas@gmail.com">somostusllantas@gmail.com</a></li>
@@ -287,8 +366,8 @@
 		</div>
 	</footer>
 
-	<script src="app.js" defer></script>
-	<a href="https://wa.me/527229145544?text=Hola%2C%20me%20interesa%20una%20llanta" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
+	<script src="app.js?v=20260513c" defer></script>
+	<a href="https://wa.me/527222474592?text=Hola%2C%20me%20interesa%20una%20llanta" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp">
 		<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.125.554 4.118 1.524 5.847L.057 23.882a.5.5 0 0 0 .614.612l6.089-1.461A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.882 9.882 0 0 1-5.031-1.378l-.361-.214-3.741.981.999-3.648-.235-.374A9.86 9.86 0 0 1 2.1 12C2.1 6.533 6.533 2.1 12 2.1c5.467 0 9.9 4.433 9.9 9.9 0 5.467-4.433 9.9-9.9 9.9z"/></svg>
 		WhatsApp
 	</a>
